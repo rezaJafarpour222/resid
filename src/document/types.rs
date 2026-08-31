@@ -1,4 +1,7 @@
-use crate::units::{Direction, Millimeter, Pt};
+use crate::{
+    font::types::ShapedText,
+    units::{Direction, Millimeter, Position, Pt, Rectangle, Size},
+};
 
 #[derive(Debug, PartialEq)]
 pub struct Document {
@@ -68,4 +71,42 @@ pub struct InlineContent {
 #[derive(Debug, PartialEq)]
 pub enum Inline {
     Text(String),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct LayoutDocument {
+    pub pages: Vec<LayoutPage>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct LayoutPage {
+    pub size: Size,
+    pub blocks: Vec<LayoutBlock>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct LayoutBlock {
+    pub rect: Rectangle,
+    pub content: LayoutContent,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct LayoutContent {
+    pub lines: Vec<LayoutLine>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct LayoutLine {
+    pub text: String,
+    pub glyphs: ShapedText,
+    pub width: Pt,
+    pub position: Position,
+    pub font_size: Pt,
+    pub direction: Direction,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct LayoutText {
+    pub text: String,
+    pub shaped: ShapedText,
 }

@@ -1,3 +1,3 @@
 pub mod loader;
 pub mod shaper;
-mod types;
+pub mod types;
