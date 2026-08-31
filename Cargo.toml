@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+html5ever = "0.39"
+markup5ever_rcdom = "0.39"
+fontdb = "0.23"
+rustybuzz = "0.20"
+lopdf = "0.44"
+ttf-parser = "0.25"
