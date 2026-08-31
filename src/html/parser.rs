@@ -8,16 +8,16 @@ use crate::{
     units::Direction,
 };
 
-pub struct HtmlParser;
+pub struct HtmlBuilder;
 
-impl HtmlParser {
+impl HtmlBuilder {
     pub fn parse(html: &str) -> Result<Document, AppError> {
         let dom = parse_document(RcDom::default(), Default::default())
             .from_utf8()
             .read_from(&mut html.as_bytes())
             .map_err(|_| AppError::HtmlParsing("html parsing failed".to_string()))?;
         let mut blocks = Vec::new();
-        HtmlParser::collect_blocks(&dom.document, &mut blocks, Direction::LTR);
+        HtmlBuilder::collect_blocks(&dom.document, &mut blocks, Direction::LTR);
         Ok(Document {
             page: Page::a4(),
             blocks,
@@ -29,27 +29,26 @@ impl HtmlParser {
             match &child.data {
                 NodeData::Element { name, .. } => {
                     let tag = name.local.as_ref();
-
                     let direction =
-                        HtmlParser::read_direction(child).unwrap_or(inherited_direction);
+                        HtmlBuilder::read_direction(child).unwrap_or(inherited_direction);
 
                     match tag {
                         "p" => {
-                            HtmlParser::paragraph(direction, child, blocks);
+                            HtmlBuilder::paragraph(direction, child, blocks);
                         }
 
                         "h1" | "h2" | "h3" => {
-                            HtmlParser::heading(tag, child, direction, blocks);
+                            HtmlBuilder::heading(tag, child, direction, blocks);
                         }
 
                         _ => {
-                            HtmlParser::collect_blocks(child, blocks, direction);
+                            HtmlBuilder::collect_blocks(child, blocks, direction);
                         }
                     }
                 }
 
                 _ => {
-                    HtmlParser::collect_blocks(child, blocks, inherited_direction);
+                    HtmlBuilder::collect_blocks(child, blocks, inherited_direction);
                 }
             }
         }
@@ -120,7 +119,7 @@ mod tests {
 
     #[test]
     fn parses_rtl_document() {
-        let document = HtmlParser::parse(
+        let document = HtmlBuilder::parse(
             r#"
             <html>
                 <body dir="rtl">
