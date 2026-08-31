@@ -2,9 +2,9 @@ use crate::{
     error::AppError,
     font::{
         loader::Font,
-        types::{Direction, ShapedGlyph, ShapedText},
-        units::Pt,
+        types::{ShapedGlyph, ShapedText},
     },
+    units::{Direction, Pt},
 };
 
 pub struct Shaper;

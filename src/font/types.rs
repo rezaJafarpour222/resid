@@ -1,9 +1,4 @@
-use crate::font::units::Pt;
-
-pub enum Direction {
-    RTL,
-    LTR,
-}
+use crate::units::Pt;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ShapedGlyph {

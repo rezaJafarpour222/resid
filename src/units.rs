@@ -1,4 +1,9 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Direction {
+    RTL,
+    LTR,
+}
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Pt(pub f32);
 impl Pt {
     pub const ZERO: Self = Self(0.0);
