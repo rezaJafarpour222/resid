@@ -45,6 +45,7 @@ impl ShapedGlyph {
 
         Ok(glyph)
     }
+    // pub fn text_shaper(font:&Font,text:&str,direction: Direction,font_size:)
 }
 #[cfg(test)]
 mod tests {
