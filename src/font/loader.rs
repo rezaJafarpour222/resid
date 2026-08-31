@@ -1,5 +1,10 @@
-use crate::font::Font;
+use crate::error::AppError;
 
+#[derive(Debug, Clone)]
+pub struct Font {
+    pub family: String,
+    pub data: Vec<u8>,
+}
 impl Font {
     pub fn load<P: AsRef<std::path::Path>>(
         family: impl Into<String>,
@@ -12,9 +17,9 @@ impl Font {
         })
     }
 
-    pub fn unit_per_em(&self) -> Result<i32, String> {
-        let face =
-            rustybuzz::Face::from_slice(&self.data, 0).ok_or_else(|| "Invalid font".to_string())?;
+    pub fn unit_per_em(&self) -> Result<i32, AppError> {
+        let face = rustybuzz::Face::from_slice(&self.data, 0)
+            .ok_or_else(|| AppError::FontError("Invalid font".to_string()))?;
         Ok(face.units_per_em())
     }
 }

@@ -1,6 +1,3 @@
+pub mod glyph;
 pub mod loader;
-
-pub struct Font {
-    pub family: String,
-    pub data: Vec<u8>,
-}
+mod types;
