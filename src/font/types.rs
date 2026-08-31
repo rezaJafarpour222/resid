@@ -1,4 +1,4 @@
-use crate::font::units::Point;
+use crate::font::units::Pt;
 
 pub enum Direction {
     RTL,
@@ -19,5 +19,5 @@ pub struct ShapedGlyph {
 pub struct ShapedText {
     pub text: String,
     pub glyphs: Vec<ShapedGlyph>,
-    pub width: Point,
+    pub width: Pt,
 }

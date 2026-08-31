@@ -3,14 +3,13 @@ use crate::{
     font::{
         loader::Font,
         types::{Direction, ShapedGlyph, ShapedText},
-        units::Point,
+        units::Pt,
     },
 };
 
 pub struct Shaper;
 impl Shaper {
-    pub fn get_shaped_glyphs(
-        &self,
+    pub fn shape_glyphs(
         font: &Font,
         text: &str,
         direction: Direction,
@@ -42,18 +41,17 @@ impl Shaper {
 
         Ok(glyph)
     }
-    pub fn text_shaper(
-        &self,
+    pub fn shaped_text(
         font: &Font,
         text: &str,
         direction: Direction,
-        font_size: Point,
+        font_size: Pt,
     ) -> Result<ShapedText, AppError> {
-        let glyphs = self.get_shaped_glyphs(font, text, direction)?;
+        let glyphs = Shaper::shape_glyphs(font, text, direction)?;
 
-        let units_per_em = font.unit_per_em()? as f32;
+        let units_per_em = font.units_per_em()? as f32;
         let advance: i32 = glyphs.iter().map(|glyph| glyph.x_advance).sum();
-        let width = Point((advance as f32 / units_per_em) * font_size.value());
+        let width = Pt((advance as f32 / units_per_em) * font_size.value());
 
         Ok(ShapedText {
             text: text.to_string(),
@@ -78,9 +76,7 @@ mod tests {
         let text = "سلام دنیا";
         let dir = Direction::RTL;
 
-        let glyphs = Shaper
-            .get_shaped_glyphs(&font, text, dir)
-            .expect("failed to shape text");
+        let glyphs = Shaper::shape_glyphs(&font, text, dir).expect("failed to shape text");
 
         for (index, glyph) in glyphs.iter().enumerate() {
             println!(
@@ -95,10 +91,9 @@ mod tests {
         let font = test_font();
         let text = "سلام دنیا";
         let dir = Direction::RTL;
-        let font_size = Point(14.0);
-        let shaped_text = Shaper
-            .text_shaper(&font, text, dir, font_size)
-            .expect("failed to shape the text");
+        let font_size = Pt(14.0);
+        let shaped_text =
+            Shaper::shaped_text(&font, text, dir, font_size).expect("failed to shape the text");
         assert_eq!(text, shaped_text.text);
         assert!(!shaped_text.glyphs.is_empty());
         assert!(shaped_text.width.value() > 0.0)

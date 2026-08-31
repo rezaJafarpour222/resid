@@ -17,7 +17,7 @@ impl Font {
         })
     }
 
-    pub fn unit_per_em(&self) -> Result<i32, AppError> {
+    pub fn units_per_em(&self) -> Result<i32, AppError> {
         let face = rustybuzz::Face::from_slice(&self.data, 0)
             .ok_or_else(|| AppError::FontError("Invalid font".to_string()))?;
         Ok(face.units_per_em())
@@ -51,7 +51,7 @@ mod tests {
     fn reads_units_per_em() {
         let path = PathBuf::from("B-NAZANIN.TTF");
         let font = Font::load("B NAZANIN", &path).expect("failed to laod font file");
-        let units = font.unit_per_em().expect("failed to read unit_per_em()");
+        let units = font.units_per_em().expect("failed to read unit_per_em()");
         println!("units per em ={units}");
         assert!(units > 0)
     }
