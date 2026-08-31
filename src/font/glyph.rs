@@ -1,19 +1,16 @@
 use crate::{
     error::AppError,
-    font::{loader::Font, types::Direction},
+    font::{
+        loader::Font,
+        types::{Direction, ShapedGlyph, ShapedText},
+        units::Point,
+    },
 };
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct ShapedGlyph {
-    pub id: u32,
-    pub x_advance: i32,
-    pub y_advance: i32,
-    pub x_offset: i32,
-    pub y_offset: i32,
-    pub cluster: u32,
-}
-impl ShapedGlyph {
+pub struct Shaper;
+impl Shaper {
     pub fn get_shaped_glyphs(
+        &self,
         font: &Font,
         text: &str,
         direction: Direction,
@@ -45,7 +42,25 @@ impl ShapedGlyph {
 
         Ok(glyph)
     }
-    // pub fn text_shaper(font:&Font,text:&str,direction: Direction,font_size:)
+    pub fn text_shaper(
+        &self,
+        font: &Font,
+        text: &str,
+        direction: Direction,
+        font_size: Point,
+    ) -> Result<ShapedText, AppError> {
+        let glyphs = self.get_shaped_glyphs(font, text, direction)?;
+
+        let units_per_em = font.unit_per_em()? as f32;
+        let advance: i32 = glyphs.iter().map(|glyph| glyph.x_advance).sum();
+        let width = Point((advance as f32 / units_per_em) * font_size.value());
+
+        Ok(ShapedText {
+            text: text.to_string(),
+            glyphs,
+            width,
+        })
+    }
 }
 #[cfg(test)]
 mod tests {
@@ -60,7 +75,11 @@ mod tests {
     #[test]
     fn shape_return_glyphs() {
         let font = test_font();
-        let glyphs = ShapedGlyph::get_shaped_glyphs(&font, "سلام دنیا", Direction::RTL)
+        let text = "سلام دنیا";
+        let dir = Direction::RTL;
+
+        let glyphs = Shaper
+            .get_shaped_glyphs(&font, text, dir)
             .expect("failed to shape text");
 
         for (index, glyph) in glyphs.iter().enumerate() {
@@ -70,5 +89,18 @@ mod tests {
             );
         }
         assert!(!glyphs.is_empty())
+    }
+    #[test]
+    fn shaped_text() {
+        let font = test_font();
+        let text = "سلام دنیا";
+        let dir = Direction::RTL;
+        let font_size = Point(14.0);
+        let shaped_text = Shaper
+            .text_shaper(&font, text, dir, font_size)
+            .expect("failed to shape the text");
+        assert_eq!(text, shaped_text.text);
+        assert!(!shaped_text.glyphs.is_empty());
+        assert!(shaped_text.width.value() > 0.0)
     }
 }
