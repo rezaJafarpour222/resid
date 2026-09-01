@@ -3,6 +3,7 @@ pub enum AppError {
     Io(std::io::Error),
     FontError(String),
     HtmlParsing(String),
+    PdfWriter(String),
 }
 impl From<std::io::Error> for AppError {
     fn from(value: std::io::Error) -> Self {
