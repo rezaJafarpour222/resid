@@ -7,7 +7,7 @@ use crate::{
 };
 
 impl PdfWriter {
-    fn set_font(&mut self, font: Font) {
+    pub fn set_font(&mut self, font: Font) {
         self.font = Some(font)
     }
     pub fn embed_font(&mut self) -> Result<ObjectId, AppError> {

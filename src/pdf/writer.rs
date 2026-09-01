@@ -1,4 +1,8 @@
-use lopdf::{Document, Object, content::Operation, dictionary};
+use lopdf::{
+    Document, Object,
+    content::{Content, Operation},
+    dictionary,
+};
 
 use crate::{
     error::AppError,
@@ -105,5 +109,166 @@ impl PdfWriter {
         self.font_installed = true;
 
         Ok(())
+    }
+
+    pub fn save(mut self, path: &str) -> Result<std::fs::File, std::io::Error> {
+        let content = Content {
+            operations: self.operations,
+        };
+
+        let content_data = content
+            .encode()
+            .map_err(|error| std::io::Error::other(error.to_string()))?;
+
+        let content_id = self.document.new_object_id();
+
+        self.document.objects.insert(
+            content_id,
+            Object::Stream(lopdf::Stream::new(dictionary! {}, content_data)),
+        );
+
+        if let Some(Object::Dictionary(page)) = self.document.objects.get_mut(&self.page_id) {
+            page.set("Contents", content_id);
+        }
+
+        self.document.save(path)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        document::layout_engine::LayoutEngine,
+        font::shaper::Shaper,
+        html::parser::HtmlBuilder,
+        units::{Direction, Millimeter},
+    };
+
+    use super::*;
+
+    fn test_font() -> Font {
+        Font::load("B Nazanin", "B-NAZANIN.TTF").expect("failed to load B Nazanin")
+    }
+
+    #[test]
+    fn creates_a4_pdf_with_rectangle() {
+        let width: Pt = Millimeter::new(210.0).into();
+
+        let height: Pt = Millimeter::new(297.0).into();
+
+        let mut writer = PdfWriter::new(width, height);
+
+        writer.draw_rectangle(
+            Pt::new(100.0),
+            Pt::new(100.0),
+            Pt::new(200.0),
+            Pt::new(100.0),
+        );
+
+        let path = "target/test-rectangle.pdf";
+
+        writer.save(path).expect("failed to save PDF");
+
+        assert!(std::path::Path::new(path).exists());
+    }
+
+    #[test]
+    fn creates_pdf_with_multiple_persian_lines() {
+        let width: Pt = Millimeter::new(210.0).into();
+
+        let height: Pt = Millimeter::new(297.0).into();
+
+        let font = test_font();
+
+        let texts = ["فاکتور فروش", "شماره فاکتور: 1001", "سلام دنیا", "چطوری غلام"];
+
+        let shaped_texts = texts
+            .iter()
+            .map(|text| Shaper::shaped_text(&font, text, Direction::RTL, Pt::new(24.0)))
+            .collect::<Result<Vec<_>, _>>()
+            .expect("failed to shape text");
+
+        let mut writer = PdfWriter::new(width, height);
+
+        writer.set_font(font);
+
+        writer
+            .install_font(&shaped_texts)
+            .expect("failed to install font");
+
+        for (index, shaped) in shaped_texts.iter().enumerate() {
+            writer
+                .draw_shaped_text(
+                    shaped,
+                    Pt::new(100.0),
+                    Pt::new(100.0 + index as f32 * 40.0),
+                    Pt::new(24.0),
+                )
+                .expect("failed to draw text");
+        }
+
+        let path = "target/test-multiple-persian.pdf";
+
+        writer.save(path).expect("failed to save PDF");
+
+        assert!(std::path::Path::new(path).exists());
+    }
+    #[test]
+    fn creates_pdf_with_wrapped_persian_paragraph() {
+        let width: Pt = Millimeter::new(210.0).into();
+        let height: Pt = Millimeter::new(297.0).into();
+
+        let font = test_font();
+
+        let document = HtmlBuilder::parse(
+            r#"
+        <div dir="rtl">
+            <p>
+                این یک متن فارسی بسیار بسیار بسیار بسیار
+                بسیار بسیار طولانی است که باید در چند خط
+                مختلف قرار بگیرد تا سیستم شکستن خطوط را
+                آزمایش کنیم
+            </p>
+        </div>
+        "#,
+        );
+        let engine = LayoutEngine::new(&font);
+        let layout = engine
+            .create_layout(&document.unwrap())
+            .expect("layout failed");
+
+        let paragraph = &layout.pages[0].blocks[0];
+
+        assert!(
+            paragraph.content.lines.len() > 1,
+            "expected multiple layout lines"
+        );
+
+        let shaped_texts = paragraph
+            .content
+            .lines
+            .iter()
+            .map(|line| line.glyphs.clone())
+            .collect::<Vec<_>>();
+
+        let mut writer = PdfWriter::new(width, height);
+
+        writer.set_font(font);
+
+        writer
+            .install_font(&shaped_texts)
+            .expect("failed to install font");
+
+        for line in &paragraph.content.lines {
+            writer
+                .draw_layout_line(line)
+                .expect("failed to draw layout line");
+        }
+
+        let path = "target/test-wrapped-persian.pdf";
+
+        writer.save(path).expect("failed to save PDF");
+
+        assert!(std::path::Path::new(path).exists());
     }
 }
