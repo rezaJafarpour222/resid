@@ -1,17 +1,11 @@
-
 # Resid
 
 <div dir="rtl">
 
-**Resid** یک ابزار خط فرمان (CLI) نوشته‌شده با Rust است که فایل‌های HTML دارای CSS را دریافت می‌کند و آن‌ها را به فایل PDF تبدیل می‌کند.
-
-تمرکز فعلی Resid روی تولید اسناد ساختاریافته، به‌ویژه اسناد فارسی مانند فاکتورها، رسیدها و گزارش‌ها است.
-
-Resid یک مرورگر وب نیست و هدف آن پشتیبانی از تمام قابلیت‌های HTML و CSS نیست. در حال حاضر، مجموعه‌ای مشخص از عناصر HTML و ویژگی‌های CSS پشتیبانی می‌شود.
-
+html از فایل pdf برای تولید فایل cli یک ابزار**Resid**
 </div>
 
-## Usage
+## نحوع اسفتاده
 
 ```bash
 resid --create <output.pdf> --from <input.html>
@@ -193,11 +187,9 @@ resid --create invoice.pdf --from invoice.html
 
 <div dir="rtl">
 
-## عناصر HTML پشتیبانی‌شده
+## HTML موارد پشتیبانی شده
 
-Resid در حال حاضر عناصر زیر را پشتیبانی می‌کند.
-
-### ساختار سند
+در حال حاضر فیچر های زیر را پشتیبانی می شود.
 
 </div>
 
@@ -214,12 +206,6 @@ nav
 div
 ```
 
-<div dir="rtl">
-
-### عناصر متنی
-
-</div>
-
 ```text
 p
 h1
@@ -230,12 +216,6 @@ h5
 h6
 ```
 
-<div dir="rtl">
-
-### عناصر جدول
-
-</div>
-
 ```text
 table
 thead
@@ -245,14 +225,6 @@ tr
 td
 th
 ```
-
-<div dir="rtl">
-
-## ویژگی‌های HTML
-
-ویژگی‌های HTML زیر در حال حاضر پشتیبانی می‌شوند:
-
-</div>
 
 ```text
 id
@@ -287,184 +259,33 @@ dir
 
 <div dir="rtl">
 
-## ویژگی‌های CSS پشتیبانی‌شده
+## CSS موارد پشتیبانی شده
 
-Resid در حال حاضر ویژگی‌های CSS زیر را پشتیبانی می‌کند.
 
-### نمایش و جهت
 
 </div>
 
 ```text
 display
 direction
-```
 
-<div dir="rtl">
-
-### فونت و متن
-
-</div>
-
-```text
 font-family
 font-size
 font-weight
 line-height
 text-align
-```
 
-<div dir="rtl">
-
-### رنگ و پس‌زمینه
-
-</div>
-
-```text
 color
 background
 background-color
-```
-
-<div dir="rtl">
-
-### فاصله
-
-</div>
-
-```text
 margin
 padding
-```
 
-<div dir="rtl">
-
-### حاشیه
-
-</div>
-
-```text
 border
 ```
 
-<div dir="rtl">
-
-## Class و ID
-
-Resid از selectorهای `class` و `id` پشتیبانی می‌کند.
-
-مثال:
-
-</div>
-
-```html
-<div class="invoice">
-    <p id="total">مبلغ کل</p>
-</div>
-```
-
-```css
-.invoice {
-    padding: 20px;
-}
-
-#total {
-    font-weight: bold;
-}
-```
-
-<div dir="rtl">
-
-## Inline Style
-
-می‌توان CSS را مستقیماً داخل attribute مربوط به `style` قرار داد:
-
-</div>
-
-```html
-<p style="font-size: 18px; text-align: center;">
-    فاکتور فروش
-</p>
-```
-
-<div dir="rtl">
-
-همچنین CSS را می‌توان داخل عنصر `<style>` در همان فایل HTML قرار داد:
-
-</div>
-
-```html
-<style>
-    body {
-        margin: 40px;
-    }
-
-    h1 {
-        text-align: center;
-    }
-</style>
-```
-
-<div dir="rtl">
-
-بنابراین تمام HTML و CSS مورد نیاز یک سند می‌تواند در یک فایل HTML قرار داشته باشد.
-
-## پشتیبانی از فارسی و RTL
-
-Resid برای تولید اسناد فارسی طراحی شده و از متن‌های راست‌به‌چپ پشتیبانی می‌کند.
-
-جهت متن را می‌توان با `dir` مشخص کرد:
-
-</div>
-
-```html
-<html dir="rtl">
-```
-
-<div dir="rtl">
-
-یا:
-
-</div>
-
-```html
-<div dir="rtl">
-    متن فارسی
-</div>
-```
-
-<div dir="rtl">
-
-همچنین می‌توان از CSS استفاده کرد:
-
-</div>
-
-```css
-body {
-    direction: rtl;
-}
-```
-
-<div dir="rtl">
-
-برای مثال:
-
-</div>
-
-```html
-<p dir="rtl">
-    مبلغ فاکتور: ۸۵٬۰۰۰٬۰۰۰ تومان
-</p>
-```
-
-<div dir="rtl">
-
-Resid برای اسنادی که شامل متن فارسی، اعداد و بخش‌هایی از متن لاتین هستند طراحی شده است.
-
 ## فونت
-
-در نسخه فعلی، Resid از **B-Nazanin** به عنوان فونت پشتیبانی‌شده استفاده می‌کند.
-
+در این نسخه فقط از فونت  بی نازنین پشتیبانی می شود
 برای استفاده از این فونت:
 
 </div>
@@ -474,22 +295,3 @@ body {
     font-family: "B-Nazanin";
 }
 ```
-
-<div dir="rtl">
-
-برای اسناد فارسی:
-
-</div>
-
-```css
-body {
-    font-family: "B-Nazanin";
-    direction: rtl;
-}
-```
-
-<div dir="rtl">
-
-در نسخه فعلی، `B-Nazanin` تنها فونت پشتیبانی‌شده توسط Resid است.
-
-</div>
