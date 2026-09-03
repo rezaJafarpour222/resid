@@ -1,31 +1,16 @@
-use markup5ever_rcdom::{Handle, NodeData};
+use super::types::{Element, Node};
 
-use crate::document::types::{Inline, InlineContent};
-
-pub fn collect_inline(handle: &Handle) -> InlineContent {
-    let mut items = Vec::new();
-
-    collect_inline_nodes(handle, &mut items);
-
-    InlineContent { items }
+pub fn text_content(element: &Element) -> String {
+    let mut text = String::new();
+    collect_text(&element.children, &mut text);
+    text
 }
 
-pub fn collect_inline_nodes(handle: &Handle, items: &mut Vec<Inline>) {
-    for child in handle.children.borrow().iter() {
-        match &child.data {
-            NodeData::Text { contents } => {
-                let text = contents.borrow().to_string();
-
-                if !text.trim().is_empty() {
-                    items.push(Inline::Text(text));
-                }
-            }
-
-            NodeData::Element { .. } => {
-                collect_inline_nodes(child, items);
-            }
-
-            _ => {}
+fn collect_text(nodes: &[Node], output: &mut String) {
+    for node in nodes {
+        match node {
+            Node::Text(value) => output.push_str(value),
+            Node::Element(element) => collect_text(&element.children, output),
         }
     }
 }

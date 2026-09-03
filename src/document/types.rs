@@ -1,13 +1,8 @@
 use crate::{
+    css::types::{Border, Color, FontWeight},
     font::types::ShapedText,
     units::{Direction, Millimeter, Position, Pt, Rectangle, Size},
 };
-
-#[derive(Debug, PartialEq)]
-pub struct Document {
-    pub page: Page,
-    pub blocks: Vec<Block>,
-}
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Page {
@@ -30,47 +25,14 @@ impl Page {
             margin_left: Millimeter::new(20.0).into(),
         }
     }
-}
 
-#[derive(Debug, PartialEq)]
-pub struct Style {
-    pub direction: Direction,
-    pub font_size: f32,
-    pub line_height: f32,
-}
-
-impl Default for Style {
-    fn default() -> Self {
-        Self {
-            direction: Direction::LTR,
-            font_size: 12.0,
-            line_height: 1.5,
-        }
+    pub fn content_width(self) -> Pt {
+        Pt::new(self.width.value() - self.margin_left.value() - self.margin_right.value())
     }
-}
 
-#[derive(Debug, PartialEq)]
-pub enum Block {
-    Paragraph {
-        content: InlineContent,
-        style: Style,
-    },
-
-    Heading {
-        level: u8,
-        content: InlineContent,
-        style: Style,
-    },
-}
-
-#[derive(Debug, PartialEq)]
-pub struct InlineContent {
-    pub items: Vec<Inline>,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum Inline {
-    Text(String),
+    pub fn content_height(self) -> Pt {
+        Pt::new(self.height.value() - self.margin_top.value() - self.margin_bottom.value())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -88,6 +50,8 @@ pub struct LayoutPage {
 pub struct LayoutBlock {
     pub rect: Rectangle,
     pub content: LayoutContent,
+    pub background: Option<Color>,
+    pub border: Border,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -103,10 +67,6 @@ pub struct LayoutLine {
     pub position: Position,
     pub font_size: Pt,
     pub direction: Direction,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct LayoutText {
-    pub text: String,
-    pub shaped: ShapedText,
+    pub color: Color,
+    pub font_weight: FontWeight,
 }
