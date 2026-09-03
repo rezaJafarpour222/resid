@@ -2,7 +2,7 @@
 
 <div dir="rtl">
 
-html از فایل pdf برای تولید فایل cli یک ابزار**Resid**
+html از فایل pdf برای تولید فایل cli یک ابزار **Resid**
 </div>
 
 ## نحوه استفاده
