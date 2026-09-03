@@ -5,7 +5,7 @@
 html از فایل pdf برای تولید فایل cli یک ابزار**Resid**
 </div>
 
-## نحوع اسفتاده
+## نحوع استفاده
 
 ```bash
 resid --create <output.pdf> --from <input.html>
