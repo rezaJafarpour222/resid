@@ -5,7 +5,7 @@
 html از فایل pdf برای تولید فایل cli یک ابزار**Resid**
 </div>
 
-## نحوع استفاده
+## نحوه استفاده
 
 ```bash
 resid --create <output.pdf> --from <input.html>
@@ -22,10 +22,6 @@ resid --create invoice.pdf --from invoice.html
 ```
 
 <div dir="rtl">
-
-Resid فایل HTML را دریافت می‌کند، CSS موجود در همان فایل را پردازش می‌کند و فایل PDF خروجی را تولید می‌کند.
-
-تمام HTML و CSS مورد نیاز یک سند می‌تواند در یک فایل HTML قرار داشته باشد.
 
 ## مثال
 
@@ -204,9 +200,6 @@ article
 aside
 nav
 div
-```
-
-```text
 p
 h1
 h2
@@ -214,9 +207,7 @@ h3
 h4
 h5
 h6
-```
 
-```text
 table
 thead
 tbody
@@ -224,40 +215,12 @@ tfoot
 tr
 td
 th
-```
 
-```text
 id
 class
 style
 dir
 ```
-
-<div dir="rtl">
-
-برای مثال:
-
-</div>
-
-```html
-<div id="invoice" class="container">
-    ...
-</div>
-```
-
-<div dir="rtl">
-
-یا:
-
-</div>
-
-```html
-<p style="font-size: 16px;">
-    متن فاکتور
-</p>
-```
-
-<div dir="rtl">
 
 ## CSS موارد پشتیبانی شده
 
@@ -285,9 +248,7 @@ border
 ```
 
 ## فونت
-در این نسخه فقط از فونت  بی نازنین پشتیبانی می شود
-برای استفاده از این فونت:
-
+در این نسخه فقط از فونت  بی نازنین پشتیبانی می شود:
 </div>
 
 ```css
