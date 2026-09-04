@@ -16,7 +16,7 @@ impl PdfWriter {
             .as_ref()
             .ok_or_else(|| AppError::PdfWriter("no font configured".to_string()))?;
 
-        let font_data = font.data.clone();
+        let font_data = font.data.to_vec();
         let font_file_id = self.document.new_object_id();
 
         self.document.objects.insert(
@@ -49,7 +49,7 @@ impl PdfWriter {
             .as_ref()
             .ok_or_else(|| AppError::PdfWriter("no font configured".to_string()))?;
 
-        let face = ttf_parser::Face::parse(&font.data, 0)
+        let face = ttf_parser::Face::parse(font.data, 0)
             .map_err(|_| AppError::PdfWriter("invalid TrueType font".to_string()))?;
         let units_per_em = font.units_per_em()? as f64;
 

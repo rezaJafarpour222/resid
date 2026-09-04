@@ -30,7 +30,7 @@ fn main() -> Result<(), AppError> {
         args.from.clone()
     };
 
-    let font = Font::load("B-Nazanin", "B-NAZANIN.TTF")?;
+    let font = Font::load("B-Nazanin", include_bytes!("../resources/B-NAZANIN.TTF"));
 
     let composition = CompositionEngine::new(Page::a4());
     let document = composition.compose(&html)?;

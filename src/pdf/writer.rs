@@ -155,7 +155,7 @@ mod tests {
     };
 
     fn test_font() -> Font {
-        Font::load("B Nazanin", "B-NAZANIN.TTF").expect("failed to load test font")
+        Font::load("B NAZANIN", include_bytes!("../../resources/B-NAZANIN.TTF"))
     }
 
     #[test]
