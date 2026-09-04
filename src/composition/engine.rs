@@ -5,7 +5,7 @@ use crate::{
         rules::StyleRule,
         types::{ComputedStyle, Display, FontWeight},
     },
-    document::types::Page,
+    document::page::Page,
     error::AppError,
     html::{
         parser::HtmlParser,

@@ -1,16 +1,13 @@
-use std::fs;
-
-use clap::Parser;
-
 use crate::{
     cli::Args,
     composition::engine::CompositionEngine,
-    document::{layout_engine::LayoutEngine, types::Page},
+    document::{layout_engine::LayoutEngine, page::Page},
     error::AppError,
     font::loader::Font,
     pdf::writer::PdfWriter,
 };
-
+use clap::Parser;
+use std::fs;
 pub mod cli;
 pub mod composition;
 pub mod css;
@@ -30,11 +27,9 @@ fn main() -> Result<(), AppError> {
         args.from.clone()
     };
 
-    let font = Font::load("B-Nazanin", include_bytes!("../resources/B-NAZANIN.TTF"));
-
-    let composition = CompositionEngine::new(Page::a4());
+    let composition = CompositionEngine::new(Page::a4_portrait());
     let document = composition.compose(&html)?;
-
+    let font = Font::get_font("Vazirmatn")?;
     let layout_engine = LayoutEngine::new(&font);
     let layout = layout_engine.create_layout(&document)?;
 

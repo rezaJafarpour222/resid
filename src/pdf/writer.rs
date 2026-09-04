@@ -149,13 +149,13 @@ mod tests {
     use super::*;
     use crate::{
         composition::engine::CompositionEngine,
-        document::{layout_engine::LayoutEngine, types::Page},
+        document::{layout_engine::LayoutEngine, page::Page},
         font::{loader::Font, shaper::Shaper},
         units::{Direction, Millimeter, Pt},
     };
 
     fn test_font() -> Font {
-        Font::load("B NAZANIN", include_bytes!("../../resources/B-NAZANIN.TTF"))
+        super::Font::get_font("B-Nazanin").unwrap()
     }
 
     #[test]
@@ -230,7 +230,7 @@ mod tests {
             </html>
         "#;
 
-        let composition = CompositionEngine::new(Page::a4());
+        let composition = CompositionEngine::new(Page::a4_portrait());
         let document = composition.compose(html).expect("composition failed");
         let layout = LayoutEngine::new(&font)
             .create_layout(&document)
@@ -287,7 +287,7 @@ mod tests {
             </html>
         "#;
 
-        let document = CompositionEngine::new(Page::a4())
+        let document = CompositionEngine::new(Page::a4_portrait())
             .compose(html)
             .expect("composition failed");
         let layout = LayoutEngine::new(&font)

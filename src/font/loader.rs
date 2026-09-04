@@ -5,9 +5,28 @@ pub struct Font {
     pub family: &'static str,
     pub data: &'static [u8],
 }
+
+pub const FONTS: &[Font] = &[
+    Font::load(
+        "B-Nazanin",
+        include_bytes!("../../resources/fonts/B-NAZANIN.TTF"),
+    ),
+    Font::load(
+        "Vazirmatn",
+        include_bytes!("../../resources/fonts/Vazirmatn.ttf"),
+    ),
+];
 impl Font {
-    pub const fn load(family: &'static str, data: &'static [u8]) -> Self {
+    const fn load(family: &'static str, data: &'static [u8]) -> Self {
         Font { family, data }
+    }
+
+    pub fn get_font(name: &str) -> Result<Self, AppError> {
+        FONTS
+            .iter()
+            .find(|f| f.family == name)
+            .cloned()
+            .ok_or_else(|| AppError::FontError("Font is not available.".to_string()))
     }
 
     pub fn units_per_em(&self) -> Result<i32, AppError> {
@@ -21,12 +40,12 @@ impl Font {
 mod tests {
     use super::*;
     fn load_font() -> Font {
-        Font::load("B NAZANIN", include_bytes!("../../resources/B-NAZANIN.TTF"))
+        super::Font::get_font("B-Nazanin").unwrap()
     }
     #[test]
     fn font_file_can_be_loaded() {
         let font = load_font();
-        assert_eq!(font.family, "B NAZANIN");
+        assert_eq!(font.family, "B-Nazanin");
         assert!(!font.data.is_empty());
     }
     #[test]

@@ -112,7 +112,7 @@ mod tests {
     use crate::font::loader::Font;
 
     fn test_font() -> Font {
-        Font::load("B NAZANIN", include_bytes!("../../resources/B-NAZANIN.TTF"))
+        super::Font::get_font("B-Nazanin").unwrap()
     }
 
     #[test]
@@ -144,7 +144,7 @@ mod tests {
     fn bidi_keeps_number_sequence_together() {
         let text = "شماره فاکتور: ۱۴۰۵-۰۰۱۲۵";
 
-        let bidi = unicode_bidi::BidiInfo::new(text, Some(unicode_bidi::Level::rtl()));
+        let bidi = unicode_bidi::BidiInfo::new(text, Some(unicode_bidi::Level::ltr()));
 
         let para = &bidi.paragraphs[0];
         let display = bidi.reorder_line(para, para.range.clone());

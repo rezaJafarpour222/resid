@@ -1,6 +1,6 @@
 use crate::{
     css::types::ComputedStyle,
-    document::types::Page,
+    document::page::Page,
     html::types::{Element, Node},
 };
 
