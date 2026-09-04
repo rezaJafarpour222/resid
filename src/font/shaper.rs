@@ -19,7 +19,7 @@ impl Shaper {
             return Ok(Vec::new());
         }
 
-        let face = rustybuzz::Face::from_slice(&font.data, 0)
+        let face = rustybuzz::Face::from_slice(font.data, 0)
             .ok_or_else(|| AppError::FontError("Invalid font".to_string()))?;
 
         /*
