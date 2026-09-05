@@ -73,7 +73,7 @@ impl PdfWriter {
             descriptor_id,
             dictionary! {
                 "Type" => "FontDescriptor",
-                "FontName" => "BNazanin",
+                "FontName" => self.font.as_ref().map_or("Unknown", |f| f.family),
                 "Flags" => 4,
                 "Ascent" => ascent,
                 "Descent" => descent,
@@ -145,7 +145,7 @@ impl PdfWriter {
             dictionary! {
                 "Type" => "Font",
                 "Subtype" => "CIDFontType2",
-                "BaseFont" => "BNazanin",
+                "BaseFont" => self.font.as_ref().map_or("Unknown", |f| f.family),
 
                 "CIDSystemInfo" => dictionary! {
                     "Registry" => "Adobe",
@@ -195,7 +195,7 @@ impl PdfWriter {
             dictionary! {
                 "Type" => "Font",
                 "Subtype" => "Type0",
-                "BaseFont" => "BNazanin",
+                "BaseFont" => self.font.as_ref().map_or("Unknown", |f| f.family),
                 "Encoding" => "Identity-H",
                 "DescendantFonts" => vec![
                     cid_font_id.into(),

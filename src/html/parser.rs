@@ -71,11 +71,7 @@ fn convert_node(handle: &Handle) -> Option<Node> {
             }))
         }
 
-        NodeData::Text { contents } => {
-            //For ignoring the html formatting indentation
-            let text = contents.borrow().to_string();
-            (!text.trim().is_empty()).then_some(Node::Text(text))
-        }
+        NodeData::Text { contents } => Some(Node::Text(contents.borrow().to_string())),
 
         _ => None,
     }

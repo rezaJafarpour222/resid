@@ -121,12 +121,18 @@ impl PdfWriter {
             vec![x.value().into(), pdf_y.value().into()],
         ));
 
+        if matches!(font_weight, FontWeight::Bold) {
+            self.operations.push(Operation::new("Tr", vec![2.into()]));
+        }
+
         self.operations.push(Operation::new(
             "Tj",
             vec![Object::String(bytes, lopdf::StringFormat::Hexadecimal)],
         ));
 
-        let _ = font_weight;
+        if matches!(font_weight, FontWeight::Bold) {
+            self.operations.push(Operation::new("Tr", vec![0.into()]));
+        }
 
         self.operations.push(Operation::new("ET", vec![]));
 
@@ -189,6 +195,45 @@ impl PdfWriter {
 
         for line in &block.content.lines {
             self.draw_layout_line(line)?;
+            match line.text_decoration {
+                crate::css::types::TextDecoration::Underline => {
+                    let y = Pt::new(line.position.y.value() + line.font_size.value() * 0.9);
+                    self.set_stroke_color(line.color);
+                    self.operations.push(Operation::new("w", vec![0.7.into()]));
+                    let pdf_y = self.pdf_y(y, Pt::ZERO);
+                    self.operations.push(Operation::new(
+                        "m",
+                        vec![line.position.x.value().into(), pdf_y.value().into()],
+                    ));
+                    self.operations.push(Operation::new(
+                        "l",
+                        vec![
+                            (line.position.x.value() + line.width.value()).into(),
+                            pdf_y.value().into(),
+                        ],
+                    ));
+                    self.operations.push(Operation::new("S", vec![]));
+                }
+                crate::css::types::TextDecoration::LineThrough => {
+                    let y = Pt::new(line.position.y.value() + line.font_size.value() * 0.45);
+                    self.set_stroke_color(line.color);
+                    self.operations.push(Operation::new("w", vec![0.7.into()]));
+                    let pdf_y = self.pdf_y(y, Pt::ZERO);
+                    self.operations.push(Operation::new(
+                        "m",
+                        vec![line.position.x.value().into(), pdf_y.value().into()],
+                    ));
+                    self.operations.push(Operation::new(
+                        "l",
+                        vec![
+                            (line.position.x.value() + line.width.value()).into(),
+                            pdf_y.value().into(),
+                        ],
+                    ));
+                    self.operations.push(Operation::new("S", vec![]));
+                }
+                crate::css::types::TextDecoration::None => {}
+            }
         }
 
         Ok(())

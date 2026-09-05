@@ -19,6 +19,10 @@ pub fn line_x(
         }
         TextAlign::Left => start_x,
         TextAlign::Right => Pt::new(start_x.value() + content_width.value() - text_width.value()),
+        TextAlign::Justify => match direction {
+            Direction::LTR => start_x,
+            Direction::RTL => Pt::new(start_x.value() + content_width.value() - text_width.value()),
+        },
         TextAlign::Start => match direction {
             Direction::LTR => start_x,
             Direction::RTL => Pt::new(start_x.value() + content_width.value() - text_width.value()),

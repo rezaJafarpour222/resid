@@ -75,6 +75,18 @@ pub enum PdfPseudoClass {
     Link,
     AnyLink,
     Visited,
+    Hover,
+    Active,
+    Focus,
+    FocusWithin,
+    FocusVisible,
+    Checked,
+    Disabled,
+    Enabled,
+    Required,
+    Optional,
+    ReadOnly,
+    ReadWrite,
 }
 
 impl ToCss for PdfPseudoClass {
@@ -86,6 +98,18 @@ impl ToCss for PdfPseudoClass {
             Self::Link => ":link",
             Self::AnyLink => ":any-link",
             Self::Visited => ":visited",
+            Self::Hover => ":hover",
+            Self::Active => ":active",
+            Self::Focus => ":focus",
+            Self::FocusWithin => ":focus-within",
+            Self::FocusVisible => ":focus-visible",
+            Self::Checked => ":checked",
+            Self::Disabled => ":disabled",
+            Self::Enabled => ":enabled",
+            Self::Required => ":required",
+            Self::Optional => ":optional",
+            Self::ReadOnly => ":read-only",
+            Self::ReadWrite => ":read-write",
         })
     }
 }
@@ -166,6 +190,42 @@ impl<'i> SelectorParserTrait<'i> for PdfSelectorParser {
         }
         if name.eq_ignore_ascii_case("visited") {
             return Ok(PdfPseudoClass::Visited);
+        }
+        if name.eq_ignore_ascii_case("hover") {
+            return Ok(PdfPseudoClass::Hover);
+        }
+        if name.eq_ignore_ascii_case("active") {
+            return Ok(PdfPseudoClass::Active);
+        }
+        if name.eq_ignore_ascii_case("focus") {
+            return Ok(PdfPseudoClass::Focus);
+        }
+        if name.eq_ignore_ascii_case("focus-within") {
+            return Ok(PdfPseudoClass::FocusWithin);
+        }
+        if name.eq_ignore_ascii_case("focus-visible") {
+            return Ok(PdfPseudoClass::FocusVisible);
+        }
+        if name.eq_ignore_ascii_case("checked") {
+            return Ok(PdfPseudoClass::Checked);
+        }
+        if name.eq_ignore_ascii_case("disabled") {
+            return Ok(PdfPseudoClass::Disabled);
+        }
+        if name.eq_ignore_ascii_case("enabled") {
+            return Ok(PdfPseudoClass::Enabled);
+        }
+        if name.eq_ignore_ascii_case("required") {
+            return Ok(PdfPseudoClass::Required);
+        }
+        if name.eq_ignore_ascii_case("optional") {
+            return Ok(PdfPseudoClass::Optional);
+        }
+        if name.eq_ignore_ascii_case("read-only") {
+            return Ok(PdfPseudoClass::ReadOnly);
+        }
+        if name.eq_ignore_ascii_case("read-write") {
+            return Ok(PdfPseudoClass::ReadWrite);
         }
 
         Err(
@@ -387,9 +447,42 @@ impl<'a> SelectorElementTrait for DomElement<'a> {
         match pseudo_class {
             PdfPseudoClass::Link | PdfPseudoClass::AnyLink => self
                 .element()
-                .map(|element| element.attribute("href").is_some())
+                .map(|e| e.attribute("href").is_some())
                 .unwrap_or(false),
             PdfPseudoClass::Visited => false,
+            PdfPseudoClass::Checked => self
+                .element()
+                .map(|e| e.attribute("checked").is_some())
+                .unwrap_or(false),
+            PdfPseudoClass::Disabled => self
+                .element()
+                .map(|e| e.attribute("disabled").is_some())
+                .unwrap_or(false),
+            PdfPseudoClass::Enabled => self
+                .element()
+                .map(|e| e.attribute("disabled").is_none())
+                .unwrap_or(false),
+            PdfPseudoClass::Required => self
+                .element()
+                .map(|e| e.attribute("required").is_some())
+                .unwrap_or(false),
+            PdfPseudoClass::Optional => self
+                .element()
+                .map(|e| e.attribute("required").is_none())
+                .unwrap_or(false),
+            PdfPseudoClass::ReadOnly => self
+                .element()
+                .map(|e| e.attribute("readonly").is_some())
+                .unwrap_or(false),
+            PdfPseudoClass::ReadWrite => self
+                .element()
+                .map(|e| e.attribute("readonly").is_none())
+                .unwrap_or(false),
+            PdfPseudoClass::Hover
+            | PdfPseudoClass::Active
+            | PdfPseudoClass::Focus
+            | PdfPseudoClass::FocusWithin
+            | PdfPseudoClass::FocusVisible => false,
         }
     }
 

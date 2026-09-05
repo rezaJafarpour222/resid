@@ -27,9 +27,18 @@ fn main() -> Result<(), AppError> {
         args.from.clone()
     };
 
-    let composition = CompositionEngine::new(Page::a4_portrait());
+    let page = match args.page.as_str() {
+        "a3" => Page::a3(),
+        "a4-landscape" => Page::a4_landscape(),
+        "a5" => Page::a5(),
+        "a6" => Page::a6(),
+        _ => Page::a4_portrait(),
+    };
+
+    let composition = CompositionEngine::new(page);
     let document = composition.compose(&html)?;
     let font = Font::get_font("Vazirmatn")?;
+    println!("{:}", font.family);
     let layout_engine = LayoutEngine::new(&font);
     let layout = layout_engine.create_layout(&document)?;
 
@@ -48,12 +57,15 @@ fn main() -> Result<(), AppError> {
         writer.install_font(&shaped_texts)?;
     }
 
-    for page in &layout.pages {
+    for (page_index, page) in layout.pages.iter().enumerate() {
+        if page_index > 0 {
+            writer.new_page();
+        }
         for block in &page.blocks {
             writer.draw_layout_block(block)?;
         }
     }
-    writer.finish()?;
+
     writer.save(&args.create)?;
 
     println!("PDF created: {}", args.create);

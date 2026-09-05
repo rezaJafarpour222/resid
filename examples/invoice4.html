@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <style>
+    body {
+      direction: rtl;
+      font-family: "Noto Sans Old North Arabian";
+      font-size: 10pt;
+    }
+
+    .invoice {
+      margin: 10pt;
+      padding: 10pt;
+      border: 2pt solid #37474F;
+      background: #FAFAFA;
+    }
+
+    .section {
+      margin: 8pt;
+      padding: 8pt;
+      border: 1pt solid #78909C;
+      background: #FFFFFF;
+    }
+
+    .title {
+      margin: 4pt;
+      padding: 5pt;
+      border: 1pt solid #B0BEC5;
+      background: #ECEFF1;
+      font-size: 14pt;
+    }
+
+    .text {
+      margin: 5pt;
+      padding: 5pt;
+      border: 1pt solid #90A4AE;
+      background: #F5F5F5;
+      font-size: 11pt;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 8pt;
+    }
+
+    .card {
+      padding: 8pt;
+      border: 1pt solid #546E7A;
+      background: #E3F2FD;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="invoice">
+    <div class="section">
+      <div class="title">مشخصات فروشنده</div>
+      <div class="text">شرکت نرم‌افزاری نمونه، ارائه‌دهنده خدمات طراحی و توسعه نرم‌افزار</div>
+      <div class="text">شماره تماس: ۰۲۱-۱۲۳۴۵۶۷۸</div>
+      <div class="text">آدرس: تهران، خیابان نمونه، ساختمان شماره ۱۰</div>
+    </div>
+
+    <div class="section">
+      <div class="title">اطلاعات مشتری</div>
+      <div class="row">
+        <div class="card">علی رضایی<br>کد مشتری: CUST-00852</div>
+        <div class="card">۰۹۱۲۱۲۳۴۵۶۷<br>ali@example.com</div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

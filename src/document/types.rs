@@ -1,33 +1,30 @@
 use crate::{
-    css::types::{Border, Color, FontWeight},
+    css::types::{Border, Color, FontWeight, TextDecoration},
     font::types::ShapedText,
     units::{Direction, Position, Pt, Rectangle, Size},
 };
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct LayoutDocument {
     pub pages: Vec<LayoutPage>,
 }
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct LayoutPage {
     pub size: Size,
     pub blocks: Vec<LayoutBlock>,
 }
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct LayoutBlock {
     pub rect: Rectangle,
     pub content: LayoutContent,
     pub background: Option<Color>,
     pub border: Border,
+    pub border_radius: Pt,
+    pub opacity: f32,
 }
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct LayoutContent {
     pub lines: Vec<LayoutLine>,
 }
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct LayoutLine {
     pub text: String,
@@ -38,4 +35,5 @@ pub struct LayoutLine {
     pub direction: Direction,
     pub color: Color,
     pub font_weight: FontWeight,
+    pub text_decoration: TextDecoration,
 }

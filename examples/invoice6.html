@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+
+  <style>
+    body {
+      direction: rtl;
+      font-family: "Vazirmatn";
+      font-size: 10pt;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+      color: #263238;
+    }
+
+    .invoice {
+      margin: 18pt;
+      padding: 14pt;
+      border: 1pt solid #CFD8DC;
+      background: #FFFFFF;
+    }
+
+    /* =========================
+       HEADER
+       ========================= */
+
+    .header {
+      padding: 14pt;
+      margin-bottom: 12pt;
+      background: #263238;
+      border: 1pt solid #263238;
+    }
+
+    .header-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 16pt;
+    }
+
+    .company {
+      padding: 2pt;
+    }
+
+    .company-name {
+      font-size: 19pt;
+      line-height: 1.3;
+      /* font-weight: bold; */
+      color: #FFFFFF;
+    }
+
+    .company-subtitle {
+      margin-top: 3pt;
+      font-size: 9pt;
+      color: #CFD8DC;
+    }
+
+    .invoice-heading {
+      padding: 2pt;
+      text-align: left;
+    }
+
+    .invoice-title {
+      font-size: 20pt;
+      line-height: 1.3;
+      /* font-weight: bold; */
+      color: #FFFFFF;
+    }
+
+    .invoice-number {
+      margin-top: 4pt;
+      font-size: 10pt;
+      color: #ECEFF1;
+    }
+
+    /* =========================
+       META INFORMATION
+       ========================= */
+
+    .meta-row {
+      display: flex;
+      flex-direction: row;
+      gap: 10pt;
+      margin-bottom: 12pt;
+    }
+
+    .meta-box {
+      flex-grow: 1;
+      padding: 9pt;
+      border: 1pt solid #CFD8DC;
+      background: #F8FAFB;
+    }
+
+    .meta-label {
+      margin-bottom: 3pt;
+      font-size: 8pt;
+      color: #607D8B;
+    }
+
+    .meta-value {
+      font-size: 10pt;
+      /* font-weight: bold; */
+      color: #263238;
+    }
+
+    /* =========================
+       PARTIES
+       ========================= */
+
+    .parties {
+      display: flex;
+      flex-direction: row;
+      gap: 10pt;
+      margin-bottom: 12pt;
+    }
+
+    .party {
+      flex-grow: 1;
+      padding: 10pt;
+      border: 1pt solid #CFD8DC;
+      background: #FFFFFF;
+    }
+
+    .party-header {
+      margin-bottom: 7pt;
+      padding-bottom: 5pt;
+      border-bottom: 1pt solid #ECEFF1;
+      font-size: 12pt;
+      /* font-weight: bold; */
+      color: #37474F;
+    }
+
+    .party-line {
+      margin-bottom: 3pt;
+      font-size: 9pt;
+    }
+
+    .party-label {
+      /* font-weight: bold; */
+      color: #607D8B;
+    }
+
+    /* =========================
+       SECTION
+       ========================= */
+
+    .section {
+      margin-bottom: 12pt;
+    }
+
+    .section-title {
+      margin-bottom: 6pt;
+      padding: 7pt 9pt;
+      border-right: 3pt solid #455A64;
+      background: #F1F4F5;
+      font-size: 12pt;
+      /* font-weight: bold; */
+      color: #263238;
+    }
+
+    /* =========================
+       ITEMS TABLE
+       ========================= */
+
+    .items {
+      border: 1pt solid #B0BEC5;
+      background: #FFFFFF;
+    }
+
+    .table-row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .cell {
+      padding: 7pt;
+      border-left: 1pt solid #CFD8DC;
+      border-bottom: 1pt solid #CFD8DC;
+      font-size: 9pt;
+    }
+
+    .cell:last-child {
+      border-left: 0pt;
+    }
+
+    .table-header {
+      background: #ECEFF1;
+      /* font-weight: bold; */
+      color: #37474F;
+    }
+
+    .description {
+      flex-grow: 4;
+    }
+
+    .quantity {
+      flex-grow: 1;
+      text-align: center;
+    }
+
+    .unit-price {
+      flex-grow: 2;
+      text-align: left;
+      direction: ltr;
+    }
+
+    .discount {
+      flex-grow: 1.5;
+      text-align: left;
+      direction: ltr;
+    }
+
+    .amount {
+      flex-grow: 2;
+      text-align: left;
+      direction: ltr;
+    }
+
+    .item-description {
+      font-size: 9pt;
+      /* font-weight: bold; */
+    }
+
+    .item-detail {
+      margin-top: 2pt;
+      font-size: 8pt;
+      color: #78909C;
+    }
+
+    /* =========================
+       TOTALS
+       ========================= */
+
+    .summary-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 16pt;
+      margin-top: 10pt;
+    }
+
+    .summary-note {
+      flex-grow: 1;
+      padding: 9pt;
+      border: 1pt solid #E0E0E0;
+      background: #FAFAFA;
+      font-size: 8pt;
+      color: #607D8B;
+    }
+
+    .totals {
+      flex-grow: 1;
+      padding: 9pt;
+      border: 1pt solid #CFD8DC;
+      background: #FFFFFF;
+    }
+
+    .total-line {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 5pt;
+      font-size: 9pt;
+    }
+
+    .total-label {
+      color: #607D8B;
+    }
+
+    .total-value {
+      direction: ltr;
+      text-align: left;
+      /* font-weight: bold; */
+    }
+
+    .grand-total {
+      margin-top: 7pt;
+      padding: 9pt;
+      border: 1pt solid #37474F;
+      background: #37474F;
+      color: #FFFFFF;
+      font-size: 12pt;
+      /* font-weight: bold; */
+    }
+
+    /* =========================
+       PAYMENT
+       ========================= */
+
+    .payment {
+      padding: 10pt;
+      border: 1pt solid #CFD8DC;
+      background: #F8FAFB;
+    }
+
+    .payment-row {
+      display: flex;
+      flex-direction: row;
+      gap: 10pt;
+      margin-bottom: 5pt;
+    }
+
+    .payment-item {
+      flex-grow: 1;
+    }
+
+    .payment-label {
+      font-size: 8pt;
+      color: #78909C;
+    }
+
+    .payment-value {
+      margin-top: 2pt;
+      font-size: 9pt;
+      /* font-weight: bold; */
+    }
+
+    .ltr {
+      direction: ltr;
+      text-align: left;
+    }
+
+    /* =========================
+       NOTES
+       ========================= */
+
+    .notes {
+      padding: 10pt;
+      border: 1pt solid #E0E0E0;
+      background: #FAFAFA;
+      font-size: 9pt;
+    }
+
+    .note {
+      margin-bottom: 4pt;
+    }
+
+    /* =========================
+       SIGNATURES
+       ========================= */
+
+    .signatures {
+      display: flex;
+      flex-direction: row;
+      gap: 12pt;
+      margin-top: 14pt;
+    }
+
+    .signature {
+      flex-grow: 1;
+      min-height: 70pt;
+      padding: 10pt;
+      border: 1pt solid #CFD8DC;
+      background: #FFFFFF;
+      text-align: center;
+    }
+
+    .signature-title {
+      margin-bottom: 32pt;
+      font-size: 10pt;
+      /* font-weight: bold; */
+      color: #455A64;
+    }
+
+    .signature-name {
+      font-size: 9pt;
+    }
+
+    /* =========================
+       FOOTER
+       ========================= */
+
+    .footer {
+      margin-top: 14pt;
+      padding-top: 8pt;
+      border-top: 1pt solid #CFD8DC;
+      text-align: center;
+      font-size: 8pt;
+      color: #78909C;
+    }
+
+    .footer-contact {
+      margin-top: 3pt;
+      direction: ltr;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="invoice">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+      <div class="header-row">
+
+        <div class="company">
+          <div class="company-name">
+            شرکت راهکارهای نرم‌افزاری پارس
+          </div>
+
+          <div class="company-subtitle">
+            طراحی، توسعه و پشتیبانی سامانه‌های نرم‌افزاری
+          </div>
+        </div>
+
+        <div class="invoice-heading">
+
+          <div class="invoice-title">
+            فاکتور فروش
+          </div>
+
+          <div class="invoice-number">
+            شماره:
+            ۱۴۰۵-۰۰۱۲۵
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- META -->
+
+    <div class="meta-row">
+
+      <div class="meta-box">
+        <div class="meta-label">
+          تاریخ صدور
+        </div>
+
+        <div class="meta-value">
+          ۱۴۰۵/۰۶/۱۲
+        </div>
+      </div>
+
+      <div class="meta-box">
+        <div class="meta-label">
+          تاریخ سررسید
+        </div>
+
+        <div class="meta-value">
+          ۱۴۰۵/۰۷/۱۲
+        </div>
+      </div>
+
+      <div class="meta-box">
+        <div class="meta-label">
+          وضعیت
+        </div>
+
+        <div class="meta-value">
+          قابل پرداخت
+        </div>
+      </div>
+
+      <div class="meta-box">
+        <div class="meta-label">
+          ارز
+        </div>
+
+        <div class="meta-value">
+          ریال
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- PARTIES -->
+
+    <div class="section">
+
+      <div class="section-title">
+        مشخصات طرفین
+      </div>
+
+      <div class="parties">
+
+        <div class="party">
+
+          <div class="party-header">
+            فروشنده
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">نام:</span>
+            شرکت راهکارهای نرم‌افزاری پارس
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">شناسه ملی:</span>
+            ۱۴۰۰۱۲۳۴۵۶۷
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">شماره ثبت:</span>
+            ۱۲۳۴۵۶
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">تلفن:</span>
+            ۰۲۱-۱۲۳۴۵۶۷۸
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">ایمیل:</span>
+            info@example.com
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">آدرس:</span>
+            تهران، خیابان ولیعصر، ساختمان شماره ۱۰، طبقه سوم
+          </div>
+
+        </div>
+
+
+        <div class="party">
+
+          <div class="party-header">
+            خریدار
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">نام:</span>
+            علی رضایی
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">شناسه مشتری:</span>
+            CUST-00852
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">شماره تماس:</span>
+            ۰۹۱۲۱۲۳۴۵۶۷
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">ایمیل:</span>
+            ali@example.com
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">کد اقتصادی:</span>
+            ۴۱۱۱۲۳۴۵۶۷۸۹
+          </div>
+
+          <div class="party-line">
+            <span class="party-label">آدرس:</span>
+            تهران، خیابان آزادی، کوچه دهم، پلاک ۲۵، واحد ۸
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ITEMS -->
+
+    <div class="section">
+
+      <div class="section-title">
+        اقلام و خدمات
+      </div>
+
+      <div class="items">
+
+        <!-- HEADER -->
+
+        <div class="table-row table-header">
+
+          <div class="cell description">
+            شرح
+          </div>
+
+          <div class="cell quantity">
+            تعداد
+          </div>
+
+          <div class="cell unit-price">
+            مبلغ واحد
+          </div>
+
+          <div class="cell discount">
+            تخفیف
+          </div>
+
+          <div class="cell amount">
+            مبلغ کل
+          </div>
+
+        </div>
+
+
+        <!-- ITEM 1 -->
+
+        <div class="table-row">
+
+          <div class="cell description">
+            <div class="item-description">
+              تحلیل و طراحی سامانه
+            </div>
+
+            <div class="item-detail">
+              تحلیل نیازمندی‌ها و طراحی معماری سیستم
+            </div>
+          </div>
+
+          <div class="cell quantity">
+            ۱
+          </div>
+
+          <div class="cell unit-price">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell discount">
+            ۰
+          </div>
+
+          <div class="cell amount">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <!-- ITEM 2 -->
+
+        <div class="table-row">
+
+          <div class="cell description">
+            <div class="item-description">
+              توسعه API و سرویس‌های اصلی
+            </div>
+
+            <div class="item-detail">
+              پیاده‌سازی REST API و منطق کسب‌وکار
+            </div>
+          </div>
+
+          <div class="cell quantity">
+            ۲
+          </div>
+
+          <div class="cell unit-price">
+            ۲۵,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell discount">
+            ۰
+          </div>
+
+          <div class="cell amount">
+            ۵۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <!-- ITEM 3 -->
+
+        <div class="table-row">
+
+          <div class="cell description">
+
+            <div class="item-description">
+              طراحی رابط کاربری
+            </div>
+
+            <div class="item-detail">
+              طراحی صفحات مدیریتی و رابط کاربری سامانه
+            </div>
+
+          </div>
+
+          <div class="cell quantity">
+            ۱
+          </div>
+
+          <div class="cell unit-price">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell discount">
+            ۰
+          </div>
+
+          <div class="cell amount">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <!-- ITEM 4 -->
+
+        <div class="table-row">
+
+          <div class="cell description">
+
+            <div class="item-description">
+              استقرار و پشتیبانی
+            </div>
+
+            <div class="item-detail">
+              نصب، تنظیمات و پشتیبانی اولیه سامانه
+            </div>
+
+          </div>
+
+          <div class="cell quantity">
+            ۱
+          </div>
+
+          <div class="cell unit-price">
+            ۱۵,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell discount">
+            ۰
+          </div>
+
+          <div class="cell amount">
+            ۱۵,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <!-- ITEM 5 -->
+
+        <div class="table-row">
+
+          <div class="cell description">
+
+            <div class="item-description">
+              مستندسازی فنی
+            </div>
+
+            <div class="item-detail">
+              تهیه مستندات نصب، راه‌اندازی و استفاده
+            </div>
+
+          </div>
+
+          <div class="cell quantity">
+            ۱
+          </div>
+
+          <div class="cell unit-price">
+            ۱۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell discount">
+            ۰
+          </div>
+
+          <div class="cell amount">
+            ۱۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary-row">
+
+      <div class="summary-note">
+
+        <div class="note">
+          مبلغ‌ها به ریال محاسبه شده‌اند.
+        </div>
+
+        <div class="note">
+          این فاکتور مطابق توافق طرفین صادر شده است.
+        </div>
+
+        <div class="note">
+          مهلت پرداخت طبق تاریخ سررسید درج‌شده است.
+        </div>
+
+      </div>
+
+
+      <div class="totals">
+
+        <div class="total-line">
+          <div class="total-label">
+            جمع اقلام
+          </div>
+
+          <div class="total-value">
+            ۱۱۵,۰۰۰,۰۰۰
+          </div>
+        </div>
+
+        <div class="total-line">
+          <div class="total-label">
+            تخفیف
+          </div>
+
+          <div class="total-value">
+            ۰
+          </div>
+        </div>
+
+        <div class="total-line">
+          <div class="total-label">
+            مالیات و عوارض
+          </div>
+
+          <div class="total-value">
+            ۱۰,۰۰۰,۰۰۰
+          </div>
+        </div>
+
+        <div class="grand-total">
+
+          <div class="total-line">
+
+            <div>
+              مبلغ قابل پرداخت
+            </div>
+
+            <div class="total-value">
+              ۱۲۵,۰۰۰,۰۰۰ ریال
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PAYMENT -->
+
+    <div class="section">
+
+      <div class="section-title">
+        اطلاعات پرداخت
+      </div>
+
+      <div class="payment">
+
+        <div class="payment-row">
+
+          <div class="payment-item">
+
+            <div class="payment-label">
+              روش پرداخت
+            </div>
+
+            <div class="payment-value">
+              انتقال بانکی
+            </div>
+
+          </div>
+
+
+          <div class="payment-item">
+
+            <div class="payment-label">
+              بانک
+            </div>
+
+            <div class="payment-value">
+              بانک ملت
+            </div>
+
+          </div>
+
+
+          <div class="payment-item">
+
+            <div class="payment-label">
+              شماره حساب
+            </div>
+
+            <div class="payment-value ltr">
+              010123456789
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="payment-row">
+
+          <div class="payment-item">
+
+            <div class="payment-label">
+              شبا
+            </div>
+
+            <div class="payment-value ltr">
+              IR120170000000123456789012
+            </div>
+
+          </div>
+
+
+          <div class="payment-item">
+
+            <div class="payment-label">
+              شناسه پرداخت
+            </div>
+
+            <div class="payment-value ltr">
+              140500125
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- NOTES -->
+
+    <div class="section">
+
+      <div class="section-title">
+        توضیحات و شرایط
+      </div>
+
+      <div class="notes">
+
+        <div class="note">
+          ۱. کلیه خدمات مطابق شرح مندرج در این فاکتور ارائه شده است.
+        </div>
+
+        <div class="note">
+          ۲. پرداخت مبلغ قابل پرداخت تا تاریخ ۱۴۰۵/۰۷/۱۲ انجام شود.
+        </div>
+
+        <div class="note">
+          ۳. هرگونه مغایرت در اطلاعات فاکتور باید پیش از پرداخت اعلام شود.
+        </div>
+
+        <div class="note">
+          ۴. این فاکتور به صورت الکترونیکی صادر شده و نیاز به مهر فیزیکی ندارد.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- SIGNATURES -->
+
+    <div class="signatures">
+
+      <div class="signature">
+
+        <div class="signature-title">
+          فروشنده
+        </div>
+
+        <div class="signature-name">
+          شرکت راهکارهای نرم‌افزاری پارس
+        </div>
+
+      </div>
+
+
+      <div class="signature">
+
+        <div class="signature-title">
+          خریدار
+        </div>
+
+        <div class="signature-name">
+          علی رضایی
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+      <div>
+        از خرید و اعتماد شما سپاسگزاریم.
+      </div>
+
+      <div class="footer-contact">
+        example.com &nbsp; | &nbsp; info@example.com &nbsp; | &nbsp; +98 21 1234 5678
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+
+</html>

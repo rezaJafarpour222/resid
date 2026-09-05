@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+
+  <style>
+    body {
+      direction: rtl;
+      font-family: "Vazirmatn";
+      font-size: 10pt;
+      line-height: 1.5;
+      margin: 12pt;
+    }
+
+    .invoice {
+      margin: 4pt;
+      padding: 10pt;
+      border: 2pt solid #37474F;
+      background: #FAFAFA;
+    }
+
+    .header {
+      margin: 4pt;
+      padding: 10pt;
+      border: 1pt solid #546E7A;
+      background: #CFD8DC;
+      text-align: center;
+    }
+
+    .header-title {
+      margin: 3pt;
+      padding: 3pt;
+      font-size: 22pt;
+      text-align: center;
+    }
+
+    .header-subtitle {
+      margin: 3pt;
+      padding: 2pt;
+      font-size: 10pt;
+      text-align: center;
+    }
+
+    .section {
+      margin: 8pt;
+      padding: 8pt;
+      border: 1pt solid #78909C;
+      background: #FFFFFF;
+    }
+
+    .section-title {
+      margin: 3pt;
+      padding: 5pt;
+      border: 1pt solid #B0BEC5;
+      background: #ECEFF1;
+      font-size: 14pt;
+      text-align: right;
+    }
+
+    .text {
+      margin: 5pt;
+      padding: 5pt;
+      border: 1pt solid #CFD8DC;
+      background: #FAFAFA;
+      font-size: 11pt;
+      line-height: 1.7;
+      text-align: right;
+    }
+
+    .small-text {
+      margin: 3pt;
+      padding: 3pt;
+      font-size: 9pt;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .left {
+      text-align: left;
+    }
+
+    .ltr {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .highlight {
+      margin: 5pt;
+      padding: 7pt;
+      border: 1pt solid #F9A825;
+      background: #FFF8E1;
+    }
+
+    .success {
+      margin: 5pt;
+      padding: 7pt;
+      border: 1pt solid #388E3C;
+      background: #C8E6C9;
+    }
+
+    .warning {
+      margin: 5pt;
+      padding: 7pt;
+      border: 1pt solid #F57C00;
+      background: #FFE0B2;
+    }
+
+    .danger {
+      margin: 5pt;
+      padding: 7pt;
+      border: 1pt solid #C62828;
+      background: #FFCDD2;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 8pt;
+      margin: 6pt;
+    }
+
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+      gap: 6pt;
+      margin: 6pt;
+    }
+
+    .card {
+      margin: 3pt;
+      padding: 8pt;
+      border: 1pt solid #546E7A;
+      background: #ECEFF1;
+    }
+
+    .seller {
+      background: #E3F2FD;
+    }
+
+    .buyer {
+      background: #F3E5F5;
+    }
+
+    .card-title {
+      margin: 2pt;
+      padding: 3pt;
+      font-size: 12pt;
+    }
+
+    .table {
+      margin: 5pt;
+      padding: 2pt;
+      border: 1pt solid #455A64;
+      background: #FFFFFF;
+    }
+
+    .table-row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .cell {
+      margin: 0pt;
+      padding: 5pt;
+      border: 1pt solid #90A4AE;
+    }
+
+    .header-cell {
+      background: #CFD8DC;
+      font-size: 11pt;
+    }
+
+    .number {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .total {
+      margin: 10pt;
+      padding: 10pt;
+      border: 2pt solid #00796B;
+      background: #B2DFDB;
+      font-size: 16pt;
+      text-align: center;
+    }
+
+    .payment-box {
+      margin: 6pt;
+      padding: 8pt;
+      border: 1pt solid #6A1B9A;
+      background: #F3E5F5;
+    }
+
+    .signature {
+      margin: 5pt;
+      padding: 12pt;
+      border: 1pt solid #90A4AE;
+      background: #FFFFFF;
+      text-align: center;
+    }
+
+    .footer {
+      margin: 10pt;
+      padding: 8pt;
+      border-top: 1pt solid #78909C;
+      text-align: center;
+      font-size: 9pt;
+    }
+
+    ul {
+      margin: 6pt;
+      padding: 6pt;
+    }
+
+    li {
+      margin: 3pt;
+      padding: 2pt;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="invoice">
+
+    <div class="header">
+
+      <div class="header-title">
+        فاکتور رسمی فروش
+      </div>
+
+      <div class="header-subtitle">
+        شرکت نرم‌افزاری نمونه
+      </div>
+
+      <div class="header-subtitle">
+        طراحی، توسعه و پشتیبانی سامانه‌های نرم‌افزاری
+      </div>
+
+      <div class="header-subtitle">
+        شماره فاکتور: ۱۴۰۵-۰۰۱۲۵
+      </div>
+
+      <div class="header-subtitle">
+        تاریخ صدور: ۱۴۰۵/۰۶/۱۲
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        مشخصات فروشنده و مشتری
+      </div>
+
+      <div class="flex-row">
+
+        <div class="card seller">
+
+          <div class="card-title">
+            مشخصات فروشنده
+          </div>
+
+          <div class="small-text">
+            نام شرکت: شرکت نرم‌افزاری نمونه
+          </div>
+
+          <div class="small-text">
+            شماره ثبت: ۱۲۳۴۵۶
+          </div>
+
+          <div class="small-text">
+            شناسه ملی: ۱۴۰۰۱۲۳۴۵۶۷
+          </div>
+
+          <div class="small-text">
+            تلفن: ۰۲۱-۱۲۳۴۵۶۷۸
+          </div>
+
+          <div class="small-text">
+            ایمیل: info@example.com
+          </div>
+
+        </div>
+
+
+        <div class="card buyer">
+
+          <div class="card-title">
+            مشخصات مشتری
+          </div>
+
+          <div class="small-text">
+            نام مشتری: علی رضایی
+          </div>
+
+          <div class="small-text">
+            شماره تماس: ۰۹۱۲۱۲۳۴۵۶۷
+          </div>
+
+          <div class="small-text">
+            کد مشتری: CUST-00852
+          </div>
+
+          <div class="small-text">
+            ایمیل: ali@example.com
+          </div>
+
+          <div class="small-text">
+            شهر: تهران
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="address">
+
+        <div class="text">
+          آدرس فروشنده: تهران، خیابان ولیعصر، خیابان نمونه،
+          ساختمان شماره ۱۰، طبقه سوم
+        </div>
+
+        <div class="text">
+          آدرس مشتری: تهران، خیابان آزادی، کوچه دهم،
+          پلاک ۲۵، واحد ۸
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        شرح خدمات
+      </div>
+
+      <div class="text">
+        طراحی و پیاده‌سازی سامانه مدیریت سفارش‌ها شامل تحلیل
+        نیازمندی‌ها، طراحی معماری نرم‌افزار، توسعه سرویس‌های
+        اصلی، طراحی پایگاه داده، پیاده‌سازی API، مدیریت کاربران
+        و تهیه گزارش‌های مدیریتی.
+      </div>
+
+      <div class="text">
+        این سامانه برای مدیریت فرآیندهای سازمانی طراحی شده است
+        و قابلیت ثبت درخواست، بررسی وضعیت سفارش، مدیریت کاربران،
+        ثبت سوابق عملیات و تهیه گزارش‌های دوره‌ای را فراهم می‌کند.
+      </div>
+
+      <div class="highlight">
+        این بخش برای آزمایش یک بلوک داخلی با
+        حاشیه، فاصله داخلی، رنگ پس‌زمینه و متن چندخطی
+        استفاده می‌شود.
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        جزئیات فنی
+      </div>
+
+      <div class="flex-column">
+
+        <div class="card">
+          <div class="card-title">
+            فناوری‌های استفاده‌شده
+          </div>
+
+          <div class="text">
+            Rust، HTML، CSS، PostgreSQL،
+            REST API و Linux
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            نسخه نرم‌افزار
+          </div>
+
+          <div class="text">
+            resid v0.1.0
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            مسیر پروژه
+          </div>
+
+          <div class="text ltr">
+            /home/user/projects/resid/src
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        متن ترکیبی فارسی، انگلیسی و عدد
+      </div>
+
+      <div class="text">
+        این فاکتور با شناسه
+        INV-1405-00125
+        ایجاد شده و درخواست
+        REQ-2026-09-05-00042
+        برای آن ثبت شده است.
+      </div>
+
+      <div class="text">
+        پاسخ سرویس:
+        HTTP/1.1 200 OK
+      </div>
+
+      <div class="text">
+        نسخه:
+        Rust 1.97.1
+      </div>
+
+      <div class="text">
+        API:
+        https://example.com/api/v1/invoices
+      </div>
+
+      <div class="text">
+        شماره پیگیری:
+        45891273
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        موارد انجام‌شده
+      </div>
+
+      <ul>
+
+        <li>
+          تحلیل نیازمندی‌های سامانه
+        </li>
+
+        <li>
+          طراحی معماری نرم‌افزار
+        </li>
+
+        <li>
+          طراحی پایگاه داده
+        </li>
+
+        <li>
+          پیاده‌سازی API
+        </li>
+
+        <li>
+          توسعه سیستم احراز هویت
+        </li>
+
+        <li>
+          تهیه گزارش‌های مدیریتی
+        </li>
+
+        <li>
+          آزمایش عملکرد
+        </li>
+
+        <li>
+          استقرار نسخه نهایی
+        </li>
+
+      </ul>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        جدول خدمات
+      </div>
+
+      <div class="table">
+
+        <div class="table-row">
+
+          <div class="cell header-cell">
+            شرح
+          </div>
+
+          <div class="cell header-cell">
+            تعداد
+          </div>
+
+          <div class="cell header-cell">
+            مبلغ واحد
+          </div>
+
+          <div class="cell header-cell">
+            مبلغ کل
+          </div>
+
+        </div>
+
+
+        <div class="table-row">
+
+          <div class="cell">
+            تحلیل و طراحی سیستم
+          </div>
+
+          <div class="cell number">
+            ۱
+          </div>
+
+          <div class="cell number">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell number">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <div class="table-row">
+
+          <div class="cell">
+            توسعه API و سرویس‌ها
+          </div>
+
+          <div class="cell number">
+            ۲
+          </div>
+
+          <div class="cell number">
+            ۲۵,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell number">
+            ۵۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <div class="table-row">
+
+          <div class="cell">
+            توسعه رابط کاربری
+          </div>
+
+          <div class="cell number">
+            ۱
+          </div>
+
+          <div class="cell number">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell number">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <div class="table-row">
+
+          <div class="cell">
+            استقرار و پشتیبانی
+          </div>
+
+          <div class="cell number">
+            ۱
+          </div>
+
+          <div class="cell number">
+            ۱۵,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell number">
+            ۱۵,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+
+        <div class="table-row">
+
+          <div class="cell">
+            تهیه مستندات فنی
+          </div>
+
+          <div class="cell number">
+            ۱
+          </div>
+
+          <div class="cell number">
+            ۱۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell number">
+            ۱۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        توضیحات تکمیلی
+      </div>
+
+      <div class="text">
+        سامانه پس از تکمیل فرآیند توسعه مورد آزمایش قرار گرفته است
+        و عملکرد سرویس‌های اصلی بررسی شده است. همچنین تنظیمات لازم
+        برای اجرای نرم‌افزار در محیط عملیاتی انجام شده و مستندات
+        مربوط به نصب، پیکربندی و استفاده از سامانه تهیه شده است.
+      </div>
+
+      <div class="success">
+        وضعیت پروژه: تکمیل شده و آماده تحویل
+      </div>
+
+      <div class="warning">
+        توجه: اطلاعات فاکتور باید قبل از پرداخت نهایی بررسی شود.
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        شرایط پرداخت
+      </div>
+
+      <div class="payment-box">
+
+        <div class="text">
+          مبلغ کل پس از تأیید نهایی مشتری قابل پرداخت است.
+        </div>
+
+        <div class="text">
+          روش پرداخت: انتقال بانکی
+        </div>
+
+        <div class="text ltr">
+          IBAN: IR120170000000123456789012
+        </div>
+
+        <div class="text">
+          شماره پیگیری:
+          45891273
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="total">
+      مبلغ قابل پرداخت:
+      ۱۲۵,۰۰۰,۰۰۰ ریال
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        تأیید طرفین
+      </div>
+
+      <div class="flex-row">
+
+        <div class="signature">
+
+          تأیید فروشنده
+
+          <br>
+          <br>
+
+          شرکت نرم‌افزاری نمونه
+
+          <br>
+          <br>
+
+          امضا و مهر
+
+        </div>
+
+
+        <div class="signature">
+
+          تأیید مشتری
+
+          <br>
+          <br>
+
+          علی رضایی
+
+          <br>
+          <br>
+
+          امضا
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="section">
+
+      <div class="section-title">
+        توضیحات نهایی
+      </div>
+
+      <div class="text">
+        این سند شامل اطلاعات مالی، مشخصات طرفین، خدمات ارائه‌شده
+        و شرایط پرداخت است. کلیه مبالغ درج‌شده به ریال محاسبه شده‌اند
+        و اطلاعات موجود باید مطابق قرارداد و توافق طرفین بررسی شود.
+      </div>
+
+      <div class="danger">
+        این سند نمونه است و برای استفاده واقعی باید اطلاعات
+        مالی و حقوقی آن بررسی و تأیید شود.
+      </div>
+
+    </div>
+
+
+    <div class="footer">
+
+      از خرید و اعتماد شما سپاسگزاریم.
+
+      <br>
+
+      شرکت نرم‌افزاری نمونه
+
+      <br>
+
+      example.com
+
+      <br>
+
+      info@example.com
+
+    </div>
+
+  </div>
+
+</body>
+
+</html>

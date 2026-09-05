@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+
+  <style>
+    body {
+      direction: rtl;
+      font-family: "Vazirmatn";
+      font-size: 10pt;
+      line-height: 1.5;
+      margin: 12pt;
+    }
+
+    .page {
+      border: 1pt solid #37474F;
+      padding: 8pt;
+      margin: 4pt;
+    }
+
+    .header {
+      background: #CFD8DC;
+      border: 1pt solid #546E7A;
+      padding: 10pt;
+      margin-bottom: 8pt;
+      text-align: center;
+    }
+
+    .header-title {
+      font-size: 22pt;
+      line-height: 1.2;
+      margin-bottom: 4pt;
+    }
+
+    .header-subtitle {
+      font-size: 10pt;
+    }
+
+    .section {
+      border: 1pt solid #78909C;
+      padding: 6pt;
+      margin-bottom: 8pt;
+    }
+
+    .section-title {
+      font-size: 14pt;
+      text-align: right;
+      margin-bottom: 5pt;
+    }
+
+    .paragraph {
+      font-size: 11pt;
+      line-height: 1.7;
+      text-align: right;
+      margin-bottom: 5pt;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .ltr {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .highlight {
+      background: #FFF9C4;
+      border: 1pt solid #FBC02D;
+      padding: 4pt;
+    }
+
+    .success {
+      background: #C8E6C9;
+      border: 1pt solid #388E3C;
+      padding: 5pt;
+    }
+
+    .warning {
+      background: #FFE0B2;
+      border: 1pt solid #F57C00;
+      padding: 5pt;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      gap: 6pt;
+      margin-bottom: 8pt;
+    }
+
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+      gap: 5pt;
+      margin-bottom: 8pt;
+    }
+
+    .box {
+      border: 1pt solid #607D8B;
+      padding: 6pt;
+    }
+
+    .box-title {
+      font-size: 12pt;
+      margin-bottom: 3pt;
+    }
+
+    .customer-box {
+      background: #ECEFF1;
+    }
+
+    .company-box {
+      background: #E3F2FD;
+    }
+
+    .table {
+      border: 1pt solid #455A64;
+      margin-top: 5pt;
+      margin-bottom: 5pt;
+    }
+
+    .table-row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .cell {
+      border: 1pt solid #90A4AE;
+      padding: 5pt;
+    }
+
+    .cell-title {
+      font-size: 11pt;
+    }
+
+    .numeric {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .total {
+      border: 1pt solid #00796B;
+      background: #B2DFDB;
+      padding: 8pt;
+      margin-top: 8pt;
+      margin-bottom: 8pt;
+      text-align: center;
+      font-size: 15pt;
+    }
+
+    .signature {
+      text-align: center;
+      border: 1pt solid #90A4AE;
+      padding: 10pt;
+      margin-top: 10pt;
+    }
+
+    .footer {
+      margin-top: 10pt;
+      padding: 6pt;
+      border-top: 1pt solid #78909C;
+      text-align: center;
+      font-size: 9pt;
+    }
+
+    ul {
+      margin: 5pt;
+      padding: 5pt;
+    }
+
+    li {
+      margin-bottom: 3pt;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-title">فاکتور رسمی فروش</div>
+      <div class="header-subtitle">
+        شرکت نرم‌افزاری نمونه — ارائه‌دهنده خدمات طراحی و توسعه نرم‌افزار
+      </div>
+    </div>
+
+    <!-- BASIC RTL TEXT -->
+    <div class="section">
+      <div class="section-title">متن و قالب‌بندی پایه</div>
+
+      <div class="paragraph">
+        این یک متن فارسی برای آزمایش سیستم صفحه‌آرایی است. متن باید از راست به چپ
+        نمایش داده شود و در صورت عبور از عرض موجود، به چند خط تقسیم شود.
+      </div>
+
+      <div class="paragraph highlight">
+        این بخش دارای
+        <strong>متن برجسته</strong>
+        و
+        <span>یک عبارت درون‌خطی</span>
+        است تا رفتار عناصر inline نیز بررسی شود.
+      </div>
+
+      <div class="paragraph">
+        در این متن اعداد فارسی مانند ۱۲۳۴۵۶، تاریخ ۱۴۰۵/۰۶/۱۲،
+        شماره تماس ۰۲۱-۱۲۳۴۵۶۷۸ و شناسه
+        INV-1405-00125
+        همگی در کنار متن راست‌به‌چپ قرار گرفته‌اند.
+      </div>
+    </div>
+
+    <!-- CUSTOMER / SELLER -->
+    <div class="section">
+      <div class="section-title">مشخصات طرفین</div>
+
+      <div class="flex-row">
+
+        <div class="box company-box">
+          <div class="box-title">فروشنده</div>
+
+          <div class="paragraph">
+            شرکت نرم‌افزاری نمونه
+          </div>
+
+          <div class="paragraph">
+            شماره ثبت: ۱۲۳۴۵۶
+          </div>
+
+          <div class="paragraph">
+            شناسه ملی:
+            ۱۴۰۰۱۲۳۴۵۶۷
+          </div>
+
+          <div class="paragraph">
+            ایمیل:
+            info@example.com
+          </div>
+        </div>
+
+        <div class="box customer-box">
+          <div class="box-title">خریدار</div>
+
+          <div class="paragraph">
+            علی رضایی
+          </div>
+
+          <div class="paragraph">
+            شماره تماس: ۰۹۱۲۱۲۳۴۵۶۷
+          </div>
+
+          <div class="paragraph">
+            ایمیل:
+            ali@example.com
+          </div>
+
+          <div class="paragraph">
+            کد مشتری:
+            CUST-00852
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LTR / RTL MIX -->
+    <div class="section">
+      <div class="section-title">آزمایش متن ترکیبی فارسی و انگلیسی</div>
+
+      <div class="paragraph">
+        این سامانه با استفاده از
+        Rust
+        و
+        HTML
+        و
+        CSS
+        توسعه داده شده است.
+      </div>
+
+      <div class="paragraph">
+        مسیر پروژه:
+        /home/user/projects/resid/src
+      </div>
+
+      <div class="paragraph">
+        نسخه نرم‌افزار:
+        resid v0.1.0
+      </div>
+
+      <div class="paragraph">
+        شناسه درخواست:
+        REQ-2026-09-05-00042
+      </div>
+
+      <div class="ltr">
+        HTTP/1.1 200 OK
+      </div>
+    </div>
+
+    <!-- SERVICE DESCRIPTION -->
+    <div class="section">
+      <div class="section-title">شرح خدمات</div>
+
+      <div class="paragraph">
+        طراحی و پیاده‌سازی سامانه مدیریت سفارش‌ها شامل تحلیل نیازمندی‌ها،
+        طراحی معماری نرم‌افزار، توسعه API، پیاده‌سازی سیستم احراز هویت،
+        مدیریت کاربران، ثبت رویدادها و تهیه گزارش‌های مدیریتی.
+      </div>
+
+      <div class="paragraph">
+        این پاراگراف عمداً طولانی است تا شکست خطوط بررسی شود.
+        سامانه باید بتواند متن فارسی را در چند خط متوالی قرار دهد،
+        فاصله بین خطوط را حفظ کند، ترتیب صحیح حروف را نمایش دهد
+        و در پایان هر خط محل مناسبی برای ادامه متن انتخاب کند.
+        همچنین وجود کلمات English و شناسه‌هایی مانند API و
+        REST-API-1405
+        نباید باعث خراب شدن ترتیب متن فارسی شود.
+      </div>
+
+      <div class="paragraph success">
+        وضعیت پروژه: تکمیل شده و آماده تحویل.
+      </div>
+
+      <div class="paragraph warning">
+        نکته: اطلاعات این فاکتور باید پیش از ارسال نهایی بررسی شود.
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <div class="section">
+      <div class="section-title">موارد انجام‌شده</div>
+
+      <ul>
+        <li>تحلیل نیازمندی‌های سامانه</li>
+        <li>طراحی معماری نرم‌افزار</li>
+        <li>پیاده‌سازی API</li>
+        <li>پیاده‌سازی احراز هویت</li>
+        <li>طراحی گزارش‌های مدیریتی</li>
+        <li>آماده‌سازی نسخه نهایی</li>
+      </ul>
+    </div>
+
+    <!-- TABLE-LIKE DATA -->
+    <div class="section">
+      <div class="section-title">جزئیات اقلام</div>
+
+      <div class="table">
+
+        <div class="table-row">
+
+          <div class="cell">
+            <div class="cell-title">شرح</div>
+          </div>
+
+          <div class="cell">
+            <div class="cell-title">تعداد</div>
+          </div>
+
+          <div class="cell">
+            <div class="cell-title">مبلغ واحد</div>
+          </div>
+
+          <div class="cell">
+            <div class="cell-title">مبلغ کل</div>
+          </div>
+
+        </div>
+
+        <div class="table-row">
+
+          <div class="cell">
+            توسعه API و سرویس‌های اصلی
+          </div>
+
+          <div class="cell numeric">
+            ۲
+          </div>
+
+          <div class="cell numeric">
+            ۲۵,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell numeric">
+            ۵۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+        <div class="table-row">
+
+          <div class="cell">
+            طراحی رابط کاربری
+          </div>
+
+          <div class="cell numeric">
+            ۱
+          </div>
+
+          <div class="cell numeric">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell numeric">
+            ۲۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+        <div class="table-row">
+
+          <div class="cell">
+            استقرار و پشتیبانی
+          </div>
+
+          <div class="cell numeric">
+            ۱
+          </div>
+
+          <div class="cell numeric">
+            ۱۵,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell numeric">
+            ۱۵,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+        <div class="table-row">
+
+          <div class="cell">
+            تهیه مستندات
+          </div>
+
+          <div class="cell numeric">
+            ۱
+          </div>
+
+          <div class="cell numeric">
+            ۱۰,۰۰۰,۰۰۰
+          </div>
+
+          <div class="cell numeric">
+            ۱۰,۰۰۰,۰۰۰
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="section">
+      <div class="section-title">شرایط پرداخت</div>
+
+      <div class="paragraph">
+        مبلغ کل پس از تأیید نهایی مشتری قابل پرداخت است.
+        پرداخت از طریق شماره حساب اعلام‌شده انجام می‌شود.
+      </div>
+
+      <div class="paragraph ltr">
+        IBAN: IR120170000000123456789012
+      </div>
+
+      <div class="paragraph">
+        شماره پیگیری:
+        45891273
+      </div>
+    </div>
+
+    <!-- TOTAL -->
+    <div class="total">
+      مبلغ قابل پرداخت:
+      ۱۲۵,۰۰۰,۰۰۰ ریال
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="flex-row">
+
+      <div class="signature">
+        تأیید فروشنده
+        <br><br>
+        شرکت نرم‌افزاری نمونه
+      </div>
+
+      <div class="signature">
+        تأیید مشتری
+        <br><br>
+        علی رضایی
+      </div>
+
+    </div>
+
+    <!-- FINAL TEXT -->
+    <div class="section">
+      <div class="section-title">توضیحات نهایی</div>
+
+      <div class="paragraph">
+        این فاکتور در تاریخ ۱۴۰۵/۰۶/۱۲ صادر شده است.
+        کلیه مبالغ به ریال محاسبه شده‌اند و اطلاعات ثبت‌شده
+        مطابق توافق طرفین است.
+      </div>
+
+      <div class="paragraph center">
+        از خرید و اعتماد شما سپاسگزاریم.
+      </div>
+    </div>
+
+    <div class="footer">
+      شرکت نرم‌افزاری نمونه —
+      example.com —
+      info@example.com
+    </div>
+
+  </div>
+
+</body>
+
+</html>

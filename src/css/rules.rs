@@ -1,47 +1,91 @@
-use super::{
-    edges::Edges,
-    selector::SelectorList,
-    types::{Border, Color, Display, FontWeight, TextAlign},
-};
+use super::{edges::Edges, selector::SelectorList, types::*};
 use crate::units::{Direction, Pt};
-
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct StyleRule {
     pub selector: SelectorList,
     pub declarations: Vec<Declaration>,
     pub source_order: usize,
 }
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Property {
     Display,
     Direction,
+    Position,
+    Top,
+    Right,
+    Bottom,
+    Left,
+    Width,
+    Height,
+    MinWidth,
+    MaxWidth,
+    MinHeight,
+    MaxHeight,
+    BoxSizing,
+    Overflow,
     FontFamily,
     FontSize,
     FontWeight,
     LineHeight,
     TextAlign,
     Color,
+    TextDecoration,
+    WhiteSpace,
+    LetterSpacing,
+    WordSpacing,
+    TextIndent,
     BackgroundColor,
+    Opacity,
     Margin,
     Padding,
     Border,
+    BorderRadius,
+    FlexDirection,
+    FlexWrap,
+    JustifyContent,
+    AlignItems,
+    FlexGrow,
+    FlexShrink,
+    FlexBasis,
+    Flex,
+    Gap,
+    RowGap,
+    ColumnGap,
+    ListStyleType,
+    ListStylePosition,
+    PageBreakBefore,
+    PageBreakAfter,
 }
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Display(Display),
     Direction(Direction),
-    String(String),
-    Pt(Pt),
+    Position(Position),
+    Length(Length),
+    FontFamily(String),
+    FontSize(Pt),
     FontWeight(FontWeight),
     Number(f32),
     TextAlign(TextAlign),
     Color(Color),
     Edges(Edges),
     Border(Border),
+    BoxSizing(BoxSizing),
+    Overflow(Overflow),
+    TextDecoration(TextDecoration),
+    WhiteSpace(WhiteSpace),
+    FlexDirection(FlexDirection),
+    FlexWrap(FlexWrap),
+    JustifyContent(JustifyContent),
+    AlignItems(AlignItems),
+    Flex {
+        grow: f32,
+        shrink: f32,
+        basis: Length,
+    },
+    ListStyleType(ListStyleType),
+    Bool(bool),
 }
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Declaration {
     pub property: Property,
