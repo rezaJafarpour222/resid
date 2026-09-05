@@ -3,6 +3,7 @@ use crate::{
         computed::compute_style,
         parser::CssParser,
         rules::StyleRule,
+        selector::DomElement,
         types::{ComputedStyle, Display, FontWeight},
     },
     document::page::Page,
@@ -42,13 +43,19 @@ impl CompositionEngine {
             css.push_str(extra_css);
         }
 
-        let rules = CssParser::parse_stylesheet(&css).map_err(AppError::CssParsing)?;
+        let rules = CssParser::parse_stylesheet(&css)?;
 
-        let mut ancestors = Vec::new();
+        let mut path = Vec::new();
         let children = document
             .children
             .iter()
-            .filter_map(|node| self.compose_node(node, None, &mut ancestors, &rules))
+            .enumerate()
+            .filter_map(|(index, node)| {
+                path.push(index);
+                let composed = self.compose_node(node, None, &mut path, &document, &rules);
+                path.pop();
+                composed
+            })
             .collect();
 
         Ok(ComposedDocument {
@@ -61,7 +68,8 @@ impl CompositionEngine {
         &self,
         node: &Node,
         parent_style: Option<&ComputedStyle>,
-        ancestors: &mut Vec<Element>,
+        path: &mut Vec<usize>,
+        document: &HtmlDocument,
         rules: &[StyleRule],
     ) -> Option<ComposedNode> {
         match node {
@@ -71,33 +79,26 @@ impl CompositionEngine {
                     return None;
                 }
 
-                let mut base = default_style_for_element(element);
-
-                if let Some(parent) = parent_style {
-                    base.direction = parent.direction;
-                    base.font_family = parent.font_family.clone();
-                    base.font_size = parent.font_size;
-                    base.font_weight = parent.font_weight;
-                    base.line_height = parent.line_height;
-                    base.text_align = parent.text_align;
-                    base.color = parent.color;
-                }
-
-                let style = compute_style(element, ancestors, parent_style, rules, base);
+                let base = default_style_for_element(element);
+                let dom_element = DomElement::new(document, path.clone());
+                let style = compute_style(&dom_element, element, parent_style, rules, base);
 
                 if style.display == Display::None {
                     return None;
                 }
 
-                ancestors.push(element.clone());
-
                 let children = element
                     .children
                     .iter()
-                    .filter_map(|child| self.compose_node(child, Some(&style), ancestors, rules))
+                    .enumerate()
+                    .filter_map(|(index, child)| {
+                        path.push(index);
+                        let composed =
+                            self.compose_node(child, Some(&style), path, document, rules);
+                        path.pop();
+                        composed
+                    })
                     .collect();
-
-                ancestors.pop();
 
                 Some(ComposedNode::Element(ComposedElement {
                     element: element.clone(),
@@ -189,4 +190,50 @@ fn default_style_for_element(element: &Element) -> ComputedStyle {
     }
 
     style
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::css::types::{Color, TextAlign};
+    use crate::document::page::Page;
+
+    #[test]
+    fn embedded_css_is_applied_during_composition() {
+        let html = r#"
+            <html>
+                <head>
+                    <style>
+                        body { background-color: #eeeeee; margin: 10pt; }
+                        .title { color: #123456; font-size: 24pt; text-align: center; padding: 5pt; }
+                    </style>
+                </head>
+                <body>
+                    <div class="title">Invoice</div>
+                </body>
+            </html>
+        "#;
+
+        let document = CompositionEngine::new(Page::a4_portrait())
+            .compose(html)
+            .expect("composition failed");
+
+        let body = match &document.children[0] {
+            ComposedNode::Element(element) => element,
+            _ => panic!("expected html element"),
+        };
+
+        assert_eq!(body.style.background_color, Some(Color::rgb(238, 238, 238)));
+        assert_eq!(body.style.margin.left, crate::units::Pt::new(10.0));
+
+        let title = match &body.children[0] {
+            ComposedNode::Element(element) => element,
+            _ => panic!("expected title element"),
+        };
+
+        assert_eq!(title.style.color, Color::rgb(0x12, 0x34, 0x56));
+        assert_eq!(title.style.font_size, crate::units::Pt::new(24.0));
+        assert_eq!(title.style.text_align, TextAlign::Center);
+        assert_eq!(title.style.padding.left, crate::units::Pt::new(5.0));
+    }
 }

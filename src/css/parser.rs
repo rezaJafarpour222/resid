@@ -1,41 +1,77 @@
-use super::{
-    edges::Edges,
-    rules::{Declaration, Property, StyleRule, Value},
-    selector::{CompoundSelector, Selector},
-    types::{Border, Color, Display, FontWeight, TextAlign},
+use cssparser::{AtRuleParser, Parser, ParserInput, QualifiedRuleParser, StyleSheetParser, Token};
+
+use crate::{
+    css::{
+        edges::Edges,
+        rules::{Declaration, Property, StyleRule, Value},
+        selector::{SelectorList, parse_selector_list},
+        types::{Border, Color, Display, FontWeight, TextAlign},
+    },
+    error::AppError,
+    units::{Direction, Pt},
 };
-use crate::units::{Direction, Pt};
 
 pub struct CssParser;
 
+struct StylesheetRuleParser {
+    source_order: usize,
+}
+
+impl<'i> AtRuleParser<'i> for StylesheetRuleParser {
+    type Prelude = ();
+    type AtRule = StyleRule;
+    type Error = String;
+}
+
+impl<'i> QualifiedRuleParser<'i> for StylesheetRuleParser {
+    type Prelude = SelectorList;
+    type QualifiedRule = StyleRule;
+    type Error = String;
+
+    fn parse_prelude<'t>(
+        &mut self,
+        input: &mut Parser<'i, 't>,
+    ) -> Result<Self::Prelude, cssparser::ParseError<'i, Self::Error>> {
+        let selector_parser = super::selector::PdfSelectorParser;
+
+        SelectorList::parse(
+            &selector_parser,
+            input,
+            selectors::parser::ParseRelative::No,
+        )
+        .map_err(|error| input.new_custom_error(format!("{error:?}")))
+    }
+
+    fn parse_block<'t>(
+        &mut self,
+        prelude: Self::Prelude,
+        _start: &cssparser::ParserState,
+        input: &mut Parser<'i, 't>,
+    ) -> Result<Self::QualifiedRule, cssparser::ParseError<'i, Self::Error>> {
+        let declarations =
+            parse_declarations_from_parser(input).map_err(|error| input.new_custom_error(error))?;
+
+        let source_order = self.source_order;
+        self.source_order += 1;
+
+        Ok(StyleRule {
+            selector: prelude,
+            declarations,
+            source_order,
+        })
+    }
+}
+
 impl CssParser {
-    pub fn parse_stylesheet(input: &str) -> Result<Vec<StyleRule>, String> {
-        let input = strip_comments(input);
+    pub fn parse_stylesheet(input: &str) -> Result<Vec<StyleRule>, AppError> {
+        let mut input_state = ParserInput::new(input);
+        let mut parser = Parser::new(&mut input_state);
+        let mut rule_parser = StylesheetRuleParser { source_order: 0 };
         let mut rules = Vec::new();
-        let mut source_order = 0;
 
-        for raw_rule in input.split('}') {
-            let Some((selector_text, declarations_text)) = raw_rule.split_once('{') else {
-                continue;
-            };
-
-            let selector_text = selector_text.trim();
-            if selector_text.is_empty() {
-                continue;
-            }
-
-            let declarations = Self::parse_declarations(declarations_text)?;
-
-            for selector_text in selector_text.split(',') {
-                let selector = parse_selector(selector_text.trim())?;
-
-                rules.push(StyleRule {
-                    selector,
-                    declarations: declarations.clone(),
-                    source_order,
-                });
-
-                source_order += 1;
+        for result in StyleSheetParser::new(&mut parser, &mut rule_parser) {
+            if let Ok(rule) = result {
+                rules.push(rule);
             }
         }
 
@@ -43,310 +79,357 @@ impl CssParser {
     }
 
     pub fn parse_declarations(input: &str) -> Result<Vec<Declaration>, String> {
-        let mut declarations = Vec::new();
+        let mut input_state = ParserInput::new(input);
+        let mut parser = Parser::new(&mut input_state);
+        parse_declarations_from_parser(&mut parser)
+    }
 
-        for raw in input.split(';') {
-            let raw = raw.trim();
-            if raw.is_empty() {
+    #[allow(dead_code)]
+    pub fn parse(input: &str) -> Result<Vec<StyleRule>, AppError> {
+        Self::parse_stylesheet(input)
+    }
+}
+
+fn parse_declarations_from_parser<'i, 't>(
+    input: &mut Parser<'i, 't>,
+) -> Result<Vec<Declaration>, String> {
+    let mut declarations = Vec::new();
+
+    while !input.is_exhausted() {
+        input.skip_whitespace();
+        if input.is_exhausted() {
+            break;
+        }
+
+        let name = match input.next() {
+            Ok(Token::Ident(name)) => name.as_ref().to_owned(),
+            Ok(_) => {
+                skip_to_declaration_boundary(input)?;
                 continue;
             }
-
-            let Some((property, value)) = raw.split_once(':') else {
-                return Err(format!("invalid CSS declaration: {raw}"));
-            };
-
-            declarations.push(parse_declaration(property.trim(), value.trim())?);
-        }
-
-        Ok(declarations)
-    }
-}
-
-fn strip_comments(input: &str) -> String {
-    let mut result = String::with_capacity(input.len());
-    let mut rest = input;
-
-    while let Some(start) = rest.find("/*") {
-        result.push_str(&rest[..start]);
-
-        let after_start = &rest[start + 2..];
-        let Some(end) = after_start.find("*/") else {
-            return result;
+            Err(_) => break,
         };
 
-        rest = &after_start[end + 2..];
-    }
-
-    result.push_str(rest);
-    result
-}
-
-fn parse_selector(input: &str) -> Result<Selector, String> {
-    let mut parts = Vec::new();
-
-    for component in input.split_whitespace() {
-        parts.push(parse_compound_selector(component)?);
-    }
-
-    if parts.is_empty() {
-        return Err("empty selector".to_string());
-    }
-
-    Ok(Selector { parts })
-}
-
-fn parse_compound_selector(input: &str) -> Result<CompoundSelector, String> {
-    if input == "*" {
-        return Ok(CompoundSelector {
-            tag: None,
-            id: None,
-            classes: Vec::new(),
-        });
-    }
-
-    let chars = input.chars().collect::<Vec<_>>();
-    let mut index = 0;
-    let mut tag = None;
-    let mut id = None;
-    let mut classes = Vec::new();
-
-    if index < chars.len() && chars[index] != '#' && chars[index] != '.' {
-        let start = index;
-        while index < chars.len() && chars[index] != '#' && chars[index] != '.' {
-            index += 1;
+        if input.try_parse(|i| i.expect_colon()).is_err() {
+            skip_to_declaration_boundary(input)?;
+            continue;
         }
 
-        tag = Some(chars[start..index].iter().collect::<String>());
-    }
-
-    while index < chars.len() {
-        let marker = chars[index];
-        if marker != '#' && marker != '.' {
-            return Err(format!("invalid selector: {input}"));
-        }
-
-        index += 1;
-        let start = index;
-
-        while index < chars.len() && chars[index] != '#' && chars[index] != '.' {
-            index += 1;
-        }
-
-        if start == index {
-            return Err(format!("invalid selector: {input}"));
-        }
-
-        let value = chars[start..index].iter().collect::<String>();
-
-        match marker {
-            '#' => {
-                if id.is_some() {
-                    return Err(format!("multiple IDs in selector: {input}"));
-                }
-                id = Some(value);
+        let value_start = input.position();
+        let mut saw_semicolon = false;
+        loop {
+            if input.is_exhausted() {
+                break;
             }
-            '.' => classes.push(value),
-            _ => unreachable!(),
+
+            match input.next() {
+                Ok(Token::Semicolon) => {
+                    saw_semicolon = true;
+                    break;
+                }
+                Ok(_) => {}
+                Err(_) => break,
+            }
+        }
+
+        let mut raw_value = input.slice_from(value_start).trim().to_owned();
+        if saw_semicolon {
+            raw_value = raw_value.trim_end_matches(';').trim().to_owned();
+        }
+
+        let (raw_value, important) = strip_important(&raw_value);
+
+        if let Some(declaration) = parse_declaration(&name, raw_value) {
+            declarations.push(Declaration {
+                property: declaration.0,
+                value: declaration.1,
+                important,
+            });
         }
     }
 
-    Ok(CompoundSelector { tag, id, classes })
+    Ok(declarations)
 }
 
-fn parse_declaration(property: &str, value: &str) -> Result<Declaration, String> {
-    let (property, value) = match property.trim().to_ascii_lowercase().as_str() {
-        "display" => (Property::Display, Value::Display(parse_display(value)?)),
-        "direction" => (
-            Property::Direction,
-            Value::Direction(parse_direction(value)?),
-        ),
-        "font-family" => (
-            Property::FontFamily,
-            Value::String(parse_font_family(value)),
-        ),
-        "font-size" => (Property::FontSize, Value::Pt(parse_length(value)?)),
-        "font-weight" => (
-            Property::FontWeight,
-            Value::FontWeight(parse_font_weight(value)?),
-        ),
-        "line-height" => (Property::LineHeight, Value::Number(parse_number(value)?)),
-        "text-align" => (
-            Property::TextAlign,
-            Value::TextAlign(parse_text_align(value)?),
-        ),
-        "color" => (Property::Color, Value::Color(parse_color(value)?)),
-        "background" | "background-color" => (
-            Property::BackgroundColor,
-            Value::Color(parse_background_color(value)?),
-        ),
-        "margin" => (Property::Margin, Value::Edges(parse_edges(value)?)),
-        "padding" => (Property::Padding, Value::Edges(parse_edges(value)?)),
-        "border" => (Property::Border, Value::Border(parse_border(value)?)),
-        _ => return Err(format!("unsupported CSS property: {property}")),
+fn skip_to_declaration_boundary<'i, 't>(input: &mut Parser<'i, 't>) -> Result<(), String> {
+    while !input.is_exhausted() {
+        match input.next() {
+            Ok(Token::Semicolon) => break,
+            Ok(_) => {}
+            Err(_) => break,
+        }
+    }
+    Ok(())
+}
+
+fn strip_important(value: &str) -> (&str, bool) {
+    let trimmed = value.trim();
+    let suffix = "!important";
+    if trimmed.len() >= suffix.len()
+        && trimmed[trimmed.len() - suffix.len()..].eq_ignore_ascii_case(suffix)
+    {
+        (trimmed[..trimmed.len() - suffix.len()].trim_end(), true)
+    } else {
+        (trimmed, false)
+    }
+}
+
+fn parse_declaration(name: &str, value: &str) -> Option<(Property, Value)> {
+    let property = match name.to_ascii_lowercase().as_str() {
+        "display" => Property::Display,
+        "direction" => Property::Direction,
+        "font-family" => Property::FontFamily,
+        "font-size" => Property::FontSize,
+        "font-weight" => Property::FontWeight,
+        "line-height" => Property::LineHeight,
+        "text-align" => Property::TextAlign,
+        "color" => Property::Color,
+        "background" | "background-color" => Property::BackgroundColor,
+        "margin" => Property::Margin,
+        "padding" => Property::Padding,
+        "border" => Property::Border,
+        _ => return None,
     };
 
-    Ok(Declaration { property, value })
+    let parsed = match property {
+        Property::Display => parse_display(value).map(Value::Display),
+        Property::Direction => parse_direction(value).map(Value::Direction),
+        Property::FontFamily => parse_font_family(value).map(Value::String),
+        Property::FontSize => parse_length(value).map(Value::Pt),
+        Property::FontWeight => parse_font_weight(value).map(Value::FontWeight),
+        Property::LineHeight => parse_line_height(value).map(|number| Value::Number(number)),
+        Property::TextAlign => parse_text_align(value).map(Value::TextAlign),
+        Property::Color => parse_color(value).map(Value::Color),
+        Property::BackgroundColor => parse_color(value).map(Value::Color),
+        Property::Margin | Property::Padding => parse_edges(value).map(Value::Edges),
+        Property::Border => parse_border(value).map(Value::Border),
+    }?;
+
+    Some((property, parsed))
 }
 
-fn parse_display(value: &str) -> Result<Display, String> {
-    match value.trim() {
-        "block" => Ok(Display::Block),
-        "inline" => Ok(Display::Inline),
-        "none" => Ok(Display::None),
-        _ => Err(format!("invalid display value: {value}")),
+fn one_token(input: &str) -> Option<Token<'_>> {
+    let mut input_state = ParserInput::new(input);
+    let mut parser = Parser::new(&mut input_state);
+    let token = parser.next().ok()?.clone();
+    parser.expect_exhausted().ok()?;
+    Some(token)
+}
+
+fn parse_display(value: &str) -> Option<Display> {
+    let token = one_token(value)?;
+    match token {
+        Token::Ident(name) if name.eq_ignore_ascii_case("block") => Some(Display::Block),
+        Token::Ident(name) if name.eq_ignore_ascii_case("inline") => Some(Display::Inline),
+        Token::Ident(name) if name.eq_ignore_ascii_case("none") => Some(Display::None),
+        _ => None,
     }
 }
 
-fn parse_direction(value: &str) -> Result<Direction, String> {
-    match value.trim() {
-        "ltr" => Ok(Direction::LTR),
-        "rtl" => Ok(Direction::RTL),
-        _ => Err(format!("invalid direction value: {value}")),
+fn parse_direction(value: &str) -> Option<Direction> {
+    let token = one_token(value)?;
+    match token {
+        Token::Ident(name) if name.eq_ignore_ascii_case("rtl") => Some(Direction::RTL),
+        Token::Ident(name) if name.eq_ignore_ascii_case("ltr") => Some(Direction::LTR),
+        _ => None,
     }
 }
 
-fn parse_font_weight(value: &str) -> Result<FontWeight, String> {
-    match value.trim() {
-        "normal" => Ok(FontWeight::Normal),
-        "bold" => Ok(FontWeight::Bold),
-        _ => Err(format!("invalid font-weight value: {value}")),
-    }
-}
-
-fn parse_text_align(value: &str) -> Result<TextAlign, String> {
-    match value.trim() {
-        "start" => Ok(TextAlign::Start),
-        "left" => Ok(TextAlign::Left),
-        "right" => Ok(TextAlign::Right),
-        "center" => Ok(TextAlign::Center),
-        _ => Err(format!("invalid text-align value: {value}")),
-    }
-}
-
-fn parse_font_family(value: &str) -> String {
-    value
-        .trim()
-        .trim_matches('"')
-        .trim_matches('\'')
-        .to_string()
-}
-
-fn parse_number(value: &str) -> Result<f32, String> {
-    value
-        .trim()
-        .parse::<f32>()
-        .map_err(|_| format!("invalid number: {value}"))
-}
-
-fn parse_length(value: &str) -> Result<Pt, String> {
+fn parse_font_family(value: &str) -> Option<String> {
     let value = value.trim();
-
-    if let Some(number) = value.strip_suffix("pt") {
-        return Ok(Pt::new(parse_number(number)?));
+    if value.is_empty() {
+        return None;
     }
 
-    if let Some(number) = value.strip_suffix("px") {
-        return Ok(Pt::new(parse_number(number)? * 72.0 / 96.0));
-    }
-
-    Err(format!("unsupported length unit: {value}"))
+    let first = value.split(',').next()?.trim();
+    Some(first.trim_matches(['\'', '"']).to_owned())
 }
 
-fn parse_edges(value: &str) -> Result<Edges, String> {
-    let values = value
-        .split_whitespace()
-        .map(parse_length)
-        .collect::<Result<Vec<_>, _>>()?;
+fn parse_length(value: &str) -> Option<Pt> {
+    let token = one_token(value)?;
+    match token {
+        Token::Number { value, .. } if value == 0.0 => Some(Pt::ZERO),
+        Token::Dimension { value, unit, .. } => convert_length(value, unit.as_ref()),
+        _ => None,
+    }
+}
+
+fn convert_length(value: f32, unit: &str) -> Option<Pt> {
+    let points = match unit.to_ascii_lowercase().as_str() {
+        "pt" => value,
+        "px" => value * 0.75,
+        "in" => value * 72.0,
+        "cm" => value * 72.0 / 2.54,
+        "mm" => value * 72.0 / 25.4,
+        "pc" => value * 12.0,
+        _ => return None,
+    };
+    Some(Pt::new(points))
+}
+
+fn parse_font_weight(value: &str) -> Option<FontWeight> {
+    let token = one_token(value)?;
+    match token {
+        Token::Ident(name) if name.eq_ignore_ascii_case("normal") => Some(FontWeight::Normal),
+        Token::Ident(name) if name.eq_ignore_ascii_case("bold") => Some(FontWeight::Bold),
+        Token::Number { value, .. } if (value - 400.0).abs() < f32::EPSILON => {
+            Some(FontWeight::Normal)
+        }
+        Token::Number { value, .. } if value >= 500.0 => Some(FontWeight::Bold),
+        _ => None,
+    }
+}
+
+fn parse_line_height(value: &str) -> Option<f32> {
+    let token = one_token(value)?;
+    match token {
+        Token::Number { value, .. } => Some(value),
+        Token::Dimension { value, unit, .. } => {
+            let points = convert_length(value, unit.as_ref())?;
+            Some(points.value() / 12.0)
+        }
+        _ => None,
+    }
+}
+
+fn parse_text_align(value: &str) -> Option<TextAlign> {
+    let token = one_token(value)?;
+    match token {
+        Token::Ident(name) if name.eq_ignore_ascii_case("start") => Some(TextAlign::Start),
+        Token::Ident(name) if name.eq_ignore_ascii_case("left") => Some(TextAlign::Left),
+        Token::Ident(name) if name.eq_ignore_ascii_case("right") => Some(TextAlign::Right),
+        Token::Ident(name) if name.eq_ignore_ascii_case("center") => Some(TextAlign::Center),
+        _ => None,
+    }
+}
+
+fn parse_color(value: &str) -> Option<Color> {
+    let value = value.trim();
+    if let Some(hex) = value.strip_prefix('#') {
+        let hex = hex.trim();
+        return match hex.len() {
+            3 => {
+                let r = u8::from_str_radix(&hex[0..1], 16).ok()? * 17;
+                let g = u8::from_str_radix(&hex[1..2], 16).ok()? * 17;
+                let b = u8::from_str_radix(&hex[2..3], 16).ok()? * 17;
+                Some(Color::rgb(r, g, b))
+            }
+            6 => Some(Color::rgb(
+                u8::from_str_radix(&hex[0..2], 16).ok()?,
+                u8::from_str_radix(&hex[2..4], 16).ok()?,
+                u8::from_str_radix(&hex[4..6], 16).ok()?,
+            )),
+            _ => None,
+        };
+    }
+
+    match value.to_ascii_lowercase().as_str() {
+        "black" => Some(Color::BLACK),
+        "white" => Some(Color::WHITE),
+        "red" => Some(Color::rgb(255, 0, 0)),
+        "green" => Some(Color::rgb(0, 128, 0)),
+        "blue" => Some(Color::rgb(0, 0, 255)),
+        "yellow" => Some(Color::rgb(255, 255, 0)),
+        "gray" | "grey" => Some(Color::rgb(128, 128, 128)),
+        "transparent" => Some(Color::rgb(255, 255, 255)),
+        _ => None,
+    }
+}
+
+fn parse_edges(value: &str) -> Option<Edges> {
+    let mut input_state = ParserInput::new(value);
+    let mut parser = Parser::new(&mut input_state);
+    let mut values = Vec::with_capacity(4);
+
+    while !parser.is_exhausted() {
+        values.push(parse_length_from_parser(&mut parser)?);
+        if values.len() > 4 {
+            return None;
+        }
+    }
 
     match values.as_slice() {
-        [] => Err("empty edge value".to_string()),
-        [one] => Ok(Edges::all(*one)),
-        [vertical, horizontal] => Ok(Edges::vertical_horizontal(*vertical, *horizontal)),
-        [top, horizontal, bottom] => Ok(Edges {
+        [a] => Some(Edges::all(*a)),
+        [vertical, horizontal] => Some(Edges::vertical_horizontal(*vertical, *horizontal)),
+        [top, horizontal, bottom] => Some(Edges {
             top: *top,
             right: *horizontal,
             bottom: *bottom,
             left: *horizontal,
         }),
-        [top, right, bottom, left] => Ok(Edges {
+        [top, right, bottom, left] => Some(Edges {
             top: *top,
             right: *right,
             bottom: *bottom,
             left: *left,
         }),
-        _ => Err("invalid edge value".to_string()),
+        _ => None,
     }
 }
 
-fn parse_color(value: &str) -> Result<Color, String> {
-    let value = value.trim();
-
-    match value.to_ascii_lowercase().as_str() {
-        "black" => return Ok(Color::BLACK),
-        "white" => return Ok(Color::WHITE),
-        "red" => return Ok(Color::rgb(255, 0, 0)),
-        "green" => return Ok(Color::rgb(0, 128, 0)),
-        "blue" => return Ok(Color::rgb(0, 0, 255)),
-        "gray" | "grey" => return Ok(Color::rgb(128, 128, 128)),
-        _ => {}
+fn parse_length_from_parser<'i, 't>(parser: &mut Parser<'i, 't>) -> Option<Pt> {
+    match parser.next().ok()? {
+        Token::Number { value, .. } if *value == 0.0 => Some(Pt::ZERO),
+        Token::Dimension { value, unit, .. } => convert_length(*value, unit.as_ref()),
+        _ => None,
     }
-
-    let hex = value
-        .strip_prefix('#')
-        .ok_or_else(|| format!("unsupported color value: {value}"))?;
-
-    let expanded = match hex.len() {
-        3 => hex.chars().flat_map(|c| [c, c]).collect::<String>(),
-        6 => hex.to_string(),
-        _ => return Err(format!("invalid hex color: {value}")),
-    };
-
-    let r =
-        u8::from_str_radix(&expanded[0..2], 16).map_err(|_| format!("invalid color: {value}"))?;
-    let g =
-        u8::from_str_radix(&expanded[2..4], 16).map_err(|_| format!("invalid color: {value}"))?;
-    let b =
-        u8::from_str_radix(&expanded[4..6], 16).map_err(|_| format!("invalid color: {value}"))?;
-
-    Ok(Color::rgb(r, g, b))
 }
 
-fn parse_background_color(value: &str) -> Result<Color, String> {
-    let first = value.split_whitespace().next().unwrap_or(value);
-    parse_color(first)
-}
-
-fn parse_border(value: &str) -> Result<Border, String> {
+fn parse_border(value: &str) -> Option<Border> {
+    let mut input_state = ParserInput::new(value);
+    let mut parser = Parser::new(&mut input_state);
     let mut width = None;
-    let mut color = Color::BLACK;
-    let mut saw_style = false;
+    let mut color = None;
 
-    for token in value.split_whitespace() {
-        if token == "solid" {
-            saw_style = true;
-            continue;
-        }
+    while !parser.is_exhausted() {
+        let start = parser.position();
+        let token = parser.next().ok()?;
 
-        if matches!(token, "none" | "dashed" | "dotted" | "double") {
-            if token == "none" {
-                return Ok(Border::NONE);
+        match token {
+            Token::Dimension { value, unit, .. } => {
+                if width.is_some() {
+                    return None;
+                }
+                width = convert_length(*value, unit.as_ref());
             }
-            return Err(format!("unsupported border style: {token}"));
+            Token::Number { value, .. } if *value == 0.0 => {
+                width = Some(Pt::ZERO);
+            }
+            Token::Ident(name) => {
+                if color.is_none() {
+                    color = parse_color(name.as_ref());
+                }
+            }
+            _ => {
+                if color.is_none() {
+                    let raw = parser.slice_from(start).trim();
+                    color = parse_color(raw);
+                }
+            }
         }
-
-        if token.ends_with("pt") || token.ends_with("px") {
-            width = Some(parse_length(token)?);
-            continue;
-        }
-
-        color = parse_color(token)?;
     }
 
-    let width = width.ok_or_else(|| "border width is required".to_string())?;
+    Some(Border::solid(width?, color.unwrap_or(Color::BLACK)))
+}
 
-    if !saw_style {
-        return Err("border style must be solid".to_string());
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn stylesheet_parser_reads_rules_and_important() {
+        let rules = CssParser::parse_stylesheet(
+            r#"
+            invoice > .row[data-kind="total"]:nth-child(2) {
+                color: #123456 !important;
+                margin: 1pt 2pt;
+            }
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(rules.len(), 1);
+        assert_eq!(rules[0].declarations.len(), 2);
+        assert!(rules[0].declarations[0].important);
     }
-
-    Ok(Border::solid(width, color))
 }

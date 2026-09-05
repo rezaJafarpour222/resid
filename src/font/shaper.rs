@@ -22,13 +22,6 @@ impl Shaper {
         let face = rustybuzz::Face::from_slice(font.data, 0)
             .ok_or_else(|| AppError::FontError("Invalid font".to_string()))?;
 
-        /*
-         * rustybuzz handles glyph shaping, but not Unicode BiDi reordering.
-         *
-         * For Persian text containing numbers or Latin text, we first resolve
-         * the Unicode Bidirectional Algorithm, get the visual runs, and then
-         * shape every run in its own direction.
-         */
         let paragraph_level = match direction {
             Direction::RTL => unicode_bidi::Level::rtl(),
             Direction::LTR => unicode_bidi::Level::ltr(),
@@ -74,8 +67,6 @@ impl Shaper {
                     x_offset: position.x_offset,
                     y_offset: position.y_offset,
 
-                    // rustybuzz's cluster is relative to this run.
-                    // Convert it back to the original logical text offset.
                     cluster: run.start as u32 + info.cluster,
                 });
             }

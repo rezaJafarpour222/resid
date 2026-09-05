@@ -4,20 +4,21 @@ use crate::{css::parser::CssParser, html::types::Element};
 
 use super::{
     rules::{Declaration, Property, StyleRule, Value},
-    selector::Specificity,
+    selector::{DomElement, matches_selector_list, selector_list_specificity},
     types::ComputedStyle,
 };
 
 #[derive(Debug, Clone)]
 struct CascadedDeclaration {
     declaration: Declaration,
-    specificity: Specificity,
+    important: bool,
+    specificity: u32,
     source_order: usize,
 }
 
 pub fn compute_style(
+    dom_element: &DomElement<'_>,
     element: &Element,
-    ancestors: &[Element],
     parent: Option<&ComputedStyle>,
     rules: &[StyleRule],
     mut base: ComputedStyle,
@@ -27,30 +28,33 @@ pub fn compute_style(
     let mut winners: HashMap<Property, CascadedDeclaration> = HashMap::new();
 
     for rule in rules {
-        if !rule.selector.matches(element, ancestors) {
+        if !matches_selector_list(&rule.selector, dom_element) {
             continue;
         }
 
-        let specificity = rule.selector.specificity();
-
+        let specificity = selector_list_specificity(&rule.selector);
         for declaration in &rule.declarations {
-            apply_candidate(&mut winners, declaration, specificity, rule.source_order);
+            apply_candidate(
+                &mut winners,
+                declaration,
+                declaration.important,
+                specificity,
+                rule.source_order,
+            );
         }
     }
 
     if let Some(inline_style) = element.attribute("style") {
-        let declarations = CssParser::parse_declarations(inline_style).unwrap_or_default();
-        for declaration in declarations {
-            apply_candidate(
-                &mut winners,
-                &declaration,
-                Specificity {
-                    id: u16::MAX,
-                    class: u16::MAX,
-                    tag: u16::MAX,
-                },
-                usize::MAX,
-            );
+        if let Ok(declarations) = CssParser::parse_declarations(inline_style) {
+            for declaration in declarations {
+                apply_candidate(
+                    &mut winners,
+                    &declaration,
+                    declaration.important,
+                    u32::MAX,
+                    usize::MAX,
+                );
+            }
         }
     }
 
@@ -64,11 +68,13 @@ pub fn compute_style(
 fn apply_candidate(
     winners: &mut HashMap<Property, CascadedDeclaration>,
     declaration: &Declaration,
-    specificity: Specificity,
+    important: bool,
+    specificity: u32,
     source_order: usize,
 ) {
     let candidate = CascadedDeclaration {
         declaration: declaration.clone(),
+        important,
         specificity,
         source_order,
     };
@@ -76,9 +82,11 @@ fn apply_candidate(
     let replace = match winners.get(&declaration.property) {
         None => true,
         Some(current) => {
-            candidate.specificity > current.specificity
-                || (candidate.specificity == current.specificity
-                    && candidate.source_order > current.source_order)
+            (
+                candidate.important,
+                candidate.specificity,
+                candidate.source_order,
+            ) > (current.important, current.specificity, current.source_order)
         }
     };
 

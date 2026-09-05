@@ -11,6 +11,9 @@ lopdf = "0.44"
 ttf-parser = "0.25"
 clap = { version = "4.6.6", features = ["derive"] }
 unicode-bidi = "0.3.18"
+cssparser = "0.37.0"
+selectors = "0.40.0"
+precomputed-hash = "0.1.1"
 
 [profile.dev]
 opt-level = 0        

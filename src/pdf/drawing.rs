@@ -126,8 +126,6 @@ impl PdfWriter {
             vec![Object::String(bytes, lopdf::StringFormat::Hexadecimal)],
         ));
 
-        // B-Nazanin is the only configured font. Do not pretend to select a
-        // different face for bold until a real bold font is supported.
         let _ = font_weight;
 
         self.operations.push(Operation::new("ET", vec![]));
