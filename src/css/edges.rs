@@ -33,4 +33,22 @@ impl Edges {
             left: horizontal,
         }
     }
+
+    pub const fn three(top: Pt, horizontal: Pt, bottom: Pt) -> Self {
+        Self {
+            top,
+            right: horizontal,
+            bottom,
+            left: horizontal,
+        }
+    }
+
+    pub const fn four(top: Pt, right: Pt, bottom: Pt, left: Pt) -> Self {
+        Self {
+            top,
+            right,
+            bottom,
+            left,
+        }
+    }
 }
