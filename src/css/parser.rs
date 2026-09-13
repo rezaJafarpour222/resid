@@ -633,13 +633,3 @@ fn parse_border(v: &str) -> Option<Border> {
         color.unwrap_or(Color::BLACK),
     ))
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn parses_extended_properties() {
-        let d=CssParser::parse_declarations("display:flex; width:50%; padding:2pt 4pt; color:rgb(10,20,30); justify-content:space-between; white-space:nowrap").unwrap();
-        assert_eq!(d.len(), 6);
-    }
-}

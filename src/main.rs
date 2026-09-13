@@ -6,6 +6,7 @@ use crate::{
     font::loader::Font,
     pdf::writer::PdfWriter,
 };
+
 use clap::Parser;
 use std::fs;
 pub mod cli;

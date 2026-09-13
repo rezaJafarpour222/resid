@@ -6,6 +6,7 @@ use super::{
 use crate::{css::parser::CssParser, html::types::Element};
 use std::collections::HashMap;
 #[derive(Clone, Debug)]
+
 struct Winner {
     declaration: Declaration,
     important: bool,
