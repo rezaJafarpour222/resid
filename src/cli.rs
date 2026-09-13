@@ -1,21 +1,35 @@
-use clap::Parser;
+use clap::{Parser, builder::PossibleValuesParser};
+
+use crate::{document::page::PAGES, font::loader::FONTS};
 
 #[derive(Parser, Debug)]
 #[command(name = "resid", version, about = "HTML/CSS to PDF renderer")]
 pub struct Args {
-    #[arg(long)]
-    pub create: String,
-
-    #[arg(long)]
+    #[arg(long, short = 'f', value_name = "FILE")]
     pub from: String,
 
-    #[arg(long, default_value = "a4", value_parser = parse_page)]
+    #[arg(long, short = 'c', value_name = "FILE")]
+    pub create: String,
+
+    #[arg(
+        long,
+        default_value = "Vazirmatn",
+        value_parser = font_parser()
+    )]
+    pub font: String,
+
+    #[arg(
+        long,
+        default_value = "a4",
+        value_parser = page_parser()
+    )]
     pub page: String,
 }
 
-fn parse_page(value: &str) -> Result<String, String> {
-    match value.to_ascii_lowercase().as_str() {
-        "a3" | "a4" | "a4-landscape" | "a5" | "a6" => Ok(value.to_ascii_lowercase()),
-        _ => Err("page must be one of: a3, a4, a4-landscape, a5, a6".to_string()),
-    }
+fn font_parser() -> PossibleValuesParser {
+    PossibleValuesParser::new(FONTS.iter().map(|font| font.family))
+}
+
+fn page_parser() -> PossibleValuesParser {
+    PossibleValuesParser::new(PAGES.iter().map(|page| page.name))
 }
