@@ -8,8 +8,18 @@ pub struct Font {
 
 pub const FONTS: &[Font] = &[
     Font::load(
-        "B-Nazanin",
-        include_bytes!("../../resources/fonts/B-NAZANIN.TTF"),
+        "Estedad",
+        include_bytes!("../../resources/fonts/Estedad-Regular.ttf"),
+    ),
+    Font::load("Gandom", include_bytes!("../../resources/fonts/Gandom.ttf")),
+    Font::load(
+        "Parastoo",
+        include_bytes!("../../resources/fonts/Parastoo.ttf"),
+    ),
+    Font::load("Samim", include_bytes!("../../resources/fonts/Samim.ttf")),
+    Font::load(
+        "Shabnam",
+        include_bytes!("../../resources/fonts/Shabnam.ttf"),
     ),
     Font::load(
         "Vazirmatn",
