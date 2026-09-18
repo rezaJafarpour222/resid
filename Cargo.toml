@@ -14,6 +14,7 @@ unicode-bidi = "0.3.18"
 cssparser = "0.37.0"
 selectors = "0.40.0"
 precomputed-hash = "0.1.1"
+svg2pdf = "0.13"
 
 [profile.dev]
 opt-level = 0        

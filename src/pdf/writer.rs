@@ -20,34 +20,46 @@ pub struct PdfWriter {
     pub pages: Vec<(lopdf::ObjectId, Vec<Operation>)>,
     pub font: Option<Font>,
     pub font_installed: bool,
-    font_resources_id: Option<lopdf::ObjectId>,
+
+    pub resources_id: lopdf::ObjectId,
 }
+
 impl PdfWriter {
     pub fn new(width: Pt, height: Pt) -> Self {
         let mut document = Document::with_version("1.7");
+
         let page_id = document.new_object_id();
         let pages_id = document.new_object_id();
         let catalog_id = document.new_object_id();
+
+        let resources_id = document.new_object_id();
+
+        document.objects.insert(resources_id, dictionary! {}.into());
+
         document.objects.insert(
             page_id,
             dictionary! {
-                "Type"=>"Page",
-                "Parent"=>pages_id,
-                "MediaBox"=>vec![
+                "Type" => "Page",
+                "Parent" => pages_id,
+                "MediaBox" => vec![
                     0.into(),
                     0.into(),
                     width.value().into(),
-                    height.value().into()
+                    height.value().into(),
                 ],
+                "Resources" => resources_id,
             }
             .into(),
         );
+
         document.objects.insert(
             pages_id,
             dictionary! {
-                "Type"=>"Pages",
-                "Kids"=>vec![page_id.into()],
-                "Count"=>1,
+                "Type" => "Pages",
+                "Kids" => vec![
+                    page_id.into()
+                ],
+                "Count" => 1,
             }
             .into(),
         );
@@ -60,7 +72,9 @@ impl PdfWriter {
             }
             .into(),
         );
+
         document.trailer.set("Root", catalog_id);
+
         Self {
             document,
             page_id,
@@ -71,8 +85,22 @@ impl PdfWriter {
             pages: Vec::new(),
             font: None,
             font_installed: false,
-            font_resources_id: None,
+            resources_id,
         }
+    }
+
+    pub(crate) fn resources_mut(&mut self) -> Result<&mut lopdf::Dictionary, AppError> {
+        let object = self
+            .document
+            .objects
+            .get_mut(&self.resources_id)
+            .ok_or_else(|| {
+                AppError::PdfWriter("PDF resources object does not exist".to_string())
+            })?;
+
+        object.as_dict_mut().map_err(|error| {
+            AppError::PdfWriter(format!("PDF resources object is not a dictionary: {error}"))
+        })
     }
 
     pub fn install_font(&mut self, shaped_texts: &[ShapedText]) -> Result<(), AppError> {
@@ -98,22 +126,14 @@ impl PdfWriter {
 
         let type0_id = self.create_type0_font(cid_font_id, to_unicode_id);
 
-        let resources_id = self.document.new_object_id();
-        self.font_resources_id = Some(resources_id);
+        let resources = self.resources_mut()?;
 
-        self.document.objects.insert(
-            resources_id,
+        resources.set(
+            "Font",
             dictionary! {
-                "Font" => dictionary! {
-                    "F1" => type0_id,
-                },
-            }
-            .into(),
+                "F1" => type0_id,
+            },
         );
-
-        if let Some(Object::Dictionary(page)) = self.document.objects.get_mut(&self.page_id) {
-            page.set("Resources", resources_id);
-        }
 
         self.font_installed = true;
 
@@ -122,54 +142,91 @@ impl PdfWriter {
 
     pub fn new_page(&mut self) {
         let old_id = self.page_id;
+
         let old_ops = std::mem::take(&mut self.operations);
+
         self.pages.push((old_id, old_ops));
+
         let page_id = self.document.new_object_id();
-        self.document.objects.insert(page_id, dictionary! {
-            "Type" => "Page",
-            "MediaBox" => vec![0.into(),0.into(),self.page_width.value().into(),self.page_height.value().into()],
-        }.into());
-        self.page_id = page_id;
-        if let Some(resources) = self.font_resources_id {
-            if let Some(Object::Dictionary(page)) = self.document.objects.get_mut(&self.page_id) {
-                page.set("Resources", resources);
+
+        self.document.objects.insert(
+            page_id,
+            dictionary! {
+                "Type" => "Page",
+
+                "MediaBox" => vec![
+                    0.into(),
+                    0.into(),
+                    self.page_width.value().into(),
+                    self.page_height.value().into(),
+                ],
+
+                "Resources" => self.resources_id,
             }
-        }
+            .into(),
+        );
+
+        self.page_id = page_id;
     }
 
     fn finalize_pages(&mut self) -> Result<(), std::io::Error> {
         let current = std::mem::take(&mut self.operations);
+
         self.pages.push((self.page_id, current));
+
         let pages_id = self.document.new_object_id();
-        let mut kids = Vec::new();
+
+        let mut kids = Vec::with_capacity(self.pages.len());
+
         for (page_id, ops) in &self.pages {
             let content = Content {
                 operations: ops.clone(),
             };
+
             let data = content
                 .encode()
-                .map_err(|e| std::io::Error::other(e.to_string()))?;
+                .map_err(|error| std::io::Error::other(error.to_string()))?;
+
             let content_id = self.document.new_object_id();
+
             self.document.objects.insert(
                 content_id,
                 Object::Stream(lopdf::Stream::new(dictionary! {}, data)),
             );
+
             if let Some(Object::Dictionary(page)) = self.document.objects.get_mut(page_id) {
                 page.set("Parent", pages_id);
+
                 page.set("Contents", content_id);
-                if let Some(resources) = self.font_resources_id {
-                    page.set("Resources", resources);
-                }
+
+                // Every page uses the shared resources.
+                page.set("Resources", self.resources_id);
             }
+
             kids.push((*page_id).into());
         }
-        self.document.objects.insert(pages_id, dictionary! {
-            "Type" => "Pages", "Kids" => Object::Array(kids), "Count" => self.pages.len() as i64,
-        }.into());
+
+        self.document.objects.insert(
+            pages_id,
+            dictionary! {
+                "Type" => "Pages",
+
+                "Kids" => Object::Array(
+                    kids
+                ),
+
+                "Count" =>
+                    self.pages.len() as i64,
+            }
+            .into(),
+        );
+
         if let Some(Object::Dictionary(catalog)) = self.document.objects.get_mut(&self.catalog_id) {
             catalog.set("Pages", pages_id);
         }
+
         self.document.trailer.set("Root", self.catalog_id);
+
         Ok(())
     }
 
@@ -177,16 +234,21 @@ impl PdfWriter {
         if self.pages.is_empty() || !self.operations.is_empty() {
             self.finalize_pages()?;
         }
+
         self.document.save(path)
     }
+
     pub fn finish(&mut self) -> Result<Vec<u8>, std::io::Error> {
         if self.pages.is_empty() {
             self.finalize_pages()?;
         }
+
         let mut buffer = Vec::new();
+
         self.document
             .save_to(&mut buffer)
-            .map_err(|e| std::io::Error::other(e.to_string()))?;
+            .map_err(|error| std::io::Error::other(error.to_string()))?;
+
         Ok(buffer)
     }
 }
