@@ -35,7 +35,7 @@ impl Edges {
         }
     }
 
-    pub const fn three(top: Pt, horizontal: Pt, bottom: Pt) -> Self {
+    pub const fn three_step(top: Pt, horizontal: Pt, bottom: Pt) -> Self {
         Self {
             top,
             right: horizontal,
@@ -44,7 +44,7 @@ impl Edges {
         }
     }
 
-    pub const fn four(top: Pt, right: Pt, bottom: Pt, left: Pt) -> Self {
+    pub const fn four_step(top: Pt, right: Pt, bottom: Pt, left: Pt) -> Self {
         Self {
             top,
             right,

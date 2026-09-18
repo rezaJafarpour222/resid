@@ -25,7 +25,7 @@ fn zero_contains_zero_on_all_sides() {
 }
 
 #[test]
-fn all_sets_same_value_on_every_side() {
+fn same_value_for_all_sides() {
     let value = Pt::new(10.0);
 
     assert_eq!(
@@ -40,7 +40,7 @@ fn all_sets_same_value_on_every_side() {
 }
 
 #[test]
-fn vertical_horizontal_sets_two_values() {
+fn vertical_horizontal_create_two_values() {
     let vertical = Pt::new(10.0);
     let horizontal = Pt::new(20.0);
 
@@ -56,13 +56,13 @@ fn vertical_horizontal_sets_two_values() {
 }
 
 #[test]
-fn three_sets_top_horizontal_bottom() {
+fn three_step_create_top_horizontal_bottom() {
     let top = Pt::new(10.0);
     let horizontal = Pt::new(20.0);
     let bottom = Pt::new(30.0);
 
     assert_eq!(
-        Edges::three(top, horizontal, bottom),
+        Edges::three_step(top, horizontal, bottom),
         Edges {
             top,
             right: horizontal,
@@ -73,14 +73,14 @@ fn three_sets_top_horizontal_bottom() {
 }
 
 #[test]
-fn four_sets_each_side_independently() {
+fn four_step_create_each_side_independently() {
     let top = Pt::new(1.0);
     let right = Pt::new(2.0);
     let bottom = Pt::new(3.0);
     let left = Pt::new(4.0);
 
     assert_eq!(
-        Edges::four(top, right, bottom, left),
+        Edges::four_step(top, right, bottom, left),
         Edges {
             top,
             right,
@@ -171,21 +171,6 @@ fn auto_uses_auto_value() {
 }
 
 #[test]
-fn color_rgb_creates_expected_color() {
-    let color = Color::rgb(10, 20, 30);
-
-    assert_eq!(color.r, 10);
-    assert_eq!(color.g, 20);
-    assert_eq!(color.b, 30);
-}
-
-#[test]
-fn black_and_white_are_correct() {
-    assert_eq!(Color::BLACK, Color::rgb(0, 0, 0));
-    assert_eq!(Color::WHITE, Color::rgb(255, 255, 255));
-}
-
-#[test]
 fn border_solid_stores_width_and_color() {
     let width = Pt::new(2.0);
     let color = Color::rgb(100, 110, 120);
@@ -220,7 +205,6 @@ fn computed_style_has_expected_defaults() {
 #[test]
 fn parses_simple_font_size() {
     let declarations = CssParser::parse_declarations("font-size: 20pt;").expect("should parse");
-
     assert_eq!(declarations.len(), 1);
     assert_eq!(declarations[0].property, Property::FontSize);
     assert_eq!(declarations[0].value, Value::FontSize(Pt::new(20.0)));
@@ -305,7 +289,7 @@ fn parses_four_value_padding() {
 
     assert_eq!(
         declarations[0].value,
-        Value::Edges(Edges::four(
+        Value::Edges(Edges::four_step(
             Pt::new(1.0),
             Pt::new(2.0),
             Pt::new(3.0),

@@ -462,7 +462,7 @@ fn parse_length(v: &str) -> Option<Length> {
         Token::Dimension { value, unit, .. } => {
             convert_length(value, unit.as_ref()).map(Length::Pt)
         }
-        Token::Percentage { unit_value, .. } => Some(Length::Percent(unit_value)),
+        Token::Percentage { unit_value, .. } => Some(Length::Percent(unit_value * 100.0)),
         Token::Ident(name) if name.eq_ignore_ascii_case("auto") => Some(Length::Auto),
         _ => None,
     }
