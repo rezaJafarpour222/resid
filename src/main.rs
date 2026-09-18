@@ -1,6 +1,7 @@
 use std::fs;
 
 use clap::Parser;
+
 use resid::{
     cli::Args,
     composition::engine::CompositionEngine,
@@ -8,6 +9,7 @@ use resid::{
     error::AppError,
     font::loader::Font,
     pdf::writer::PdfWriter,
+    units::Pt,
 };
 
 fn main() -> Result<(), AppError> {
@@ -22,17 +24,24 @@ fn main() -> Result<(), AppError> {
     let page = get_page(&args.page).expect("page was already validated by clap");
 
     let composition = CompositionEngine::new(page);
+
     let document = composition.compose(&html)?;
 
     let font = Font::get_font(&args.font)?;
 
     println!("Font: {}", font.family);
+
     println!("Page: {}", args.page);
 
     let layout_engine = LayoutEngine::new(&font);
+
     let layout = layout_engine.create_layout(&document)?;
 
     let mut writer = PdfWriter::new(document.page.width, document.page.height);
+
+    let svg = fs::read_to_string("resources/test.svg")?;
+
+    let logo = writer.embed_svg(&svg)?;
 
     writer.set_font(font);
 
@@ -53,9 +62,19 @@ fn main() -> Result<(), AppError> {
             writer.new_page();
         }
 
+        // First render all existing PDF/HTML content.
         for block in &page.blocks {
             writer.draw_layout_block(block)?;
         }
+
+        // Then render SVG on top.
+        writer.draw_svg(
+            logo,
+            Pt::new(350.0),
+            Pt::new(100.0),
+            Pt::new(150.0),
+            Pt::new(150.0),
+        )?;
     }
 
     writer.save(&args.create)?;
