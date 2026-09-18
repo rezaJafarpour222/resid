@@ -1,5 +1,6 @@
 use crate::units::Pt;
 
+//NOTE: this struct represent margin & padding
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Edges {
     pub top: Pt,

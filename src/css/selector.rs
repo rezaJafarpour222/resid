@@ -60,7 +60,6 @@ impl ToCss for CssAtom {
 
 impl PrecomputedHash for CssAtom {
     fn precomputed_hash(&self) -> u32 {
-        // FNV-1a is only used as the selector-cache/bloom-filter hash.
         let mut hash = 2166136261u32;
         for byte in self.0.as_bytes() {
             hash ^= u32::from(*byte);
