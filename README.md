@@ -1,258 +1,219 @@
 # Resid
 
-<div dir="rtl">
+**Resid** is a command-line tool for generating PDF files from HTML and CSS. It is designed for Persian/RTL documents such as invoices, receipts, reports, and administrative templates. It supports right-to-left text, spacing, Flexbox, tables, and SVG.
 
-html از فایل pdf برای تولید فایل cli یک ابزار **Resid**
-</div>
+## Features
 
-## نحوه استفاده
+- PDF output with configurable page sizes
+- HTML and inline `<style>` CSS
+- Persian and right-to-left text
+- Margins, padding, borders, backgrounds
+- Basic Flexbox layouts
+- CSS tables
+- Inline and external SVG
+- Font and page-size selection from CLI
+- Example documents in `examples/`
 
-```bash
-resid --create <output.pdf> --from <input.html>
-```
+## Requirements
 
-<div dir="rtl">
+- Rust toolchain
+- Required fonts installed or available to the app
 
-برای مثال:
-
-</div>
-
-```bash
-resid --create invoice.pdf --from invoice.html
-```
-
-<div dir="rtl">
-
-## مثال
-
-فایل `invoice.html`:
-
-</div>
-
-```html
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-
-<head>
-  <style>
-    body {
-      direction: rtl;
-      font-family: "B-Nazanin";
-      font-size: 10pt;
-      line-height: 1.2;
-    }
-
-    .invoice {
-      margin: 1pt;
-      border: 1pt solid #546E7A;
-    }
-
-    .header {
-      margin: 1pt;
-      padding: 1pt;
-      text-align: center;
-      background: #B0BEC5;
-      border: 1pt solid #546E7A;
-    }
-
-    .title {
-      margin: 1pt;
-      padding: 1pt;
-      font-size: 22pt;
-      text-align: center;
-    }
-
-    .subtitle {
-      margin: 1pt;
-      font-size: 11pt;
-      text-align: center;
-    }
-
-    .section {
-      margin: 1pt;
-      padding: 1pt;
-      background: #EEEEEE;
-      border: 1pt solid #546E7A;
-    }
-
-    .section-title {
-      margin: 1pt;
-      padding: 1pt;
-      font-size: 15pt;
-      text-align: right;
-    }
-
-    .text {
-      margin: 1pt;
-      padding: 10pt;
-      font-size: 12pt;
-      line-height: 1.7;
-      text-align: right;
-    }
-
-    .total {
-      margin: 1pt;
-      padding: 1pt;
-      background: #4DB6AC;
-      border: 1pt solid #C8E6C9;
-      font-size: 15pt;
-      text-align: center;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 1pt;
-      font-size: 10pt;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="invoice">
-
-    <div class="header">
-      <div class="title">فاکتور فروش</div>
-      <div class="subtitle">شماره فاکتور: ۱۴۰۵-۰۰۱۲۵</div>
-      <div class="subtitle">تاریخ: ۱۴۰۵/۰۶/۱۲</div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">مشخصات فروشنده</div>
-      <div class="text">
-        شرکت نرم‌افزاری نمونه، ارائه‌دهنده خدمات طراحی و توسعه نرم‌افزار
-      </div>
-      <div class="text">شماره تماس: ۰۲۱-۱۲۳۴۵۶۷۸</div>
-      <div class="text">آدرس: تهران، خیابان نمونه، ساختمان شماره ۱۰</div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">مشخصات مشتری</div>
-      <div class="text">نام مشتری: علی رضایی</div>
-      <div class="text">شماره تماس: ۰۹۱۲۱۲۳۴۵۶۷</div>
-      <div class="text">آدرس: تهران، خیابان آزادی، کوچه دهم</div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">شرح خدمات</div>
-
-      <div class="text">
-        طراحی و پیاده‌سازی سامانه مدیریت سفارش‌ها، توسعه رابط برنامه‌نویسی کاربردی، ایجاد
-        سیستم احراز هویت و تهیه گزارش‌های مدیریتی. این متن عمداً طولانی است تا قابلیت شکست
-        خطوط، اندازه‌گیری صحیح متن فارسی، فاصله‌گذاری عمودی و قرارگیری راست‌به‌چپ در چند خط
-        مختلف صفحه آزمایش شود.
-      </div>
-
-      <div class="text">
-        خدمات شامل تحلیل نیازمندی‌ها، طراحی معماری نرم‌افزار، پیاده‌سازی سرویس‌های اصلی،
-        آزمایش عملکرد و آماده‌سازی نسخه نهایی برای استفاده در محیط عملیاتی است.
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">شرایط پرداخت</div>
-
-      <div class="text">
-        مبلغ کل فاکتور پس از تأیید نهایی مشتری قابل پرداخت است و کلیه خدمات درج‌شده در این
-        فاکتور مطابق توافق طرفین ارائه خواهد شد.
-      </div>
-    </div>
-
-    <div class="total">
-      مبلغ قابل پرداخت: ۱۲۵,۰۰۰,۰۰۰ ریال
-    </div>
-
-    <div class="footer">
-      از خرید و اعتماد شما سپاسگزاریم.
-    </div>
-
-  </div>
-</body>
-
-</html>
-```
-
-<div dir="rtl">
-
-برای تبدیل فایل:
-
-</div>
-
-```bash
-resid --create invoice.pdf --from invoice.html
-```
-
-<div dir="rtl">
-
-## HTML موارد پشتیبانی شده
-
-در حال حاضر فیچر های زیر را پشتیبانی می شود.
-
-</div>
+Supported fonts:
 
 ```text
-html
-body
-header
-footer
-main
-section
-article
-aside
-nav
-div
-p
-h1
-h2
-h3
-h4
-h5
-h6
+Estedad
+Gandom
+Parastoo
+Samim
+Shabnam
+Vazirmatn
+```
 
-table
-thead
-tbody
-tfoot
-tr
-td
-th
+## Build
 
+```bash
+cargo build --release
+```
+
+Binary output:
+
+```text
+target/release/resid
+```
+
+## Quick start
+
+```bash
+resid --create output.pdf --from input.html
+```
+
+Or short form:
+
+```bash
+resid -c output.pdf -f input.html
+```
+
+## CLI options
+
+```text
+--from, -f     HTML file path or HTML string
+--create, -c   Output PDF path
+--font         Font name (default: Vazirmatn)
+--page         Page size (default: a4)
+```
+
+Supported page sizes:
+
+```text
+a3
+a4
+a4-landscape
+a5
+a6
+```
+
+### Example
+
+```bash
+resid \
+  --from examples/invoice-professional.html \
+  --create output.pdf \
+  --font Vazirmatn \
+  --page a4
+```
+
+## Examples
+
+The `examples/` directory contains sample HTML files:
+
+```text
+invoice1.html ... invoice6.html
+invoice-professional.html
+receipt.html
+logo-left.html
+logo-right.html
+svg.html
+```
+
+Run one:
+
+```bash
+resid --from examples/receipt.html --create receipt.pdf
+```
+
+## HTML support
+
+Supported structure:
+
+```text
+html, body, header, footer, main
+section, article, aside, nav
+div, p, h1-h6
+table, thead, tbody, tfoot, tr, td, th
+br, img, svg
+```
+
+Supported HTML attributes:
+
+```text
 id
 class
 style
 dir
+src
+width
+height
 ```
 
-## CSS موارد پشتیبانی شده
+## CSS support
 
-
-
-</div>
+The parser supports the properties below. Layout behavior varies by property.
 
 ```text
 display
 direction
-
-font-family
-font-size
-font-weight
-line-height
-text-align
-
-color
-background
-background-color
-margin
-padding
-
-border
+position
+width, height, min/max width/height
+margin, padding
+border, border-radius
+font-family, font-size, font-weight, line-height
+text-align, color, background/background-color
+opacity
+flex-direction, flex-wrap, justify-content, align-items
+flex-grow, flex-shrink, flex-basis, gap
+list-style-type, list-style-position
+page-break-before, page-break-after
 ```
 
-## فونت
-در این نسخه فقط از فونت  بی نازنین پشتیبانی می شود:
-</div>
+## SVG
 
-```css
-body {
-    font-family: "B-Nazanin";
-}
+Inline SVG:
+
+```html
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="50" r="40" fill="red" />
+</svg>
+```
+
+External SVG:
+
+```html
+<img class="logo" src="assets/logo.svg" alt="Logo">
+```
+
+Relative paths are resolved against the HTML file location when loading through `--from`.
+
+## Tests
+
+Run all tests:
+
+```bash
+cargo test
+```
+
+Run integration tests:
+
+```bash
+cargo test --test integration
+```
+
+## Development
+
+Project structure:
+
+```text
+src/
+  composition/   HTML + CSS composition
+  css/           parser and computed styles
+  document/      layout and page dimensions
+  font/          font loading and shaping
+  html/           HTML parser
+  pdf/            PDF generation, fonts, and SVG
+  cli.rs         command-line interface
+  main.rs        entry point
+```
+
+Format code:
+
+```bash
+cargo fmt
+```
+
+Check warnings:
+
+```bash
+cargo clippy
+```
+
+## Current limitations
+
+- CSS support is still partial. Grid, float, transform, shadows, and advanced effects are not fully implemented.
+- Advanced pagination, repeated table headers, headers, and footers are not complete.
+- Fonts may require environment setup.
+- SVG rendering depends on `usvg` behavior and supported CSS features.
+
+---
+
+Resid is optimized for Persian and right-to-left documents. Compare your HTML with examples in `examples/` for best results.
 ```
