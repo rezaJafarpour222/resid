@@ -73,9 +73,3 @@ Estedad, Gandom, Parastoo, Samim, Shabnam, Vazirmatn
 resid --from invoice.html --create invoice.pdf --font Vazirmatn
 ```
 
-## تست
-
-```bash
-cargo test
-```
-```
