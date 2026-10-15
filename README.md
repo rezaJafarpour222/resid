@@ -229,6 +229,3 @@ Resid برای تولید اسناد فارسی و راست‌به‌چپ طرا
 
 </div>
 ```
-
-This should be committed? User maybe wants. Let's commit with docs style.<|end|><|start|>start_of_turn<|channel|>assistant to=bash<|channel|>analysis <|constrain|>xml<|message|><rfl:parameter name="command">
-cd /home/reza/Codes/resid && git add README.md && git commit -m "Docs: rewrite README in Persian with RTL layout" 2>&1 | tail -5
