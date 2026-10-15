@@ -1,25 +1,31 @@
 # Resid
 
-**Resid** is a command-line tool for generating PDF files from HTML and CSS. It is designed for Persian/RTL documents such as invoices, receipts, reports, and administrative templates. It supports right-to-left text, spacing, Flexbox, tables, and SVG.
+<div align="center" dir="rtl">
+<strong>ابزار خط فرمان برای تولید فایل PDF از HTML و CSS</strong>
+</div>
 
-## Features
+<div dir="rtl">
 
-- PDF output with configurable page sizes
-- HTML and inline `<style>` CSS
-- Persian and right-to-left text
-- Margins, padding, borders, backgrounds
-- Basic Flexbox layouts
-- CSS tables
-- Inline and external SVG
-- Font and page-size selection from CLI
-- Example documents in `examples/`
+**Resid** برای ساخت اسناد فارسی و راست‌به‌چپ مانند فاکتور، رسید، گزارش و قالب‌های اداری طراحی شده است. این پروژه از متن فارسی، ترازبندی، Margin و Padding، جداول، Flexbox پایه و SVG پشتیبانی می‌کند.
 
-## Requirements
+## ویژگی‌ها
 
-- Rust toolchain
-- Required fonts installed or available to the app
+- تولید PDF با اندازه‌های قابل تنظیم صفحه
+- بارگذاری HTML و CSS داخل `<style>`
+- پشتیبانی از متن فارسی و جهت راست‌به‌چپ
+- Margin، Padding، Border و Background
+- چیدمان‌های Flexbox پایه
+- جدول‌های CSS با ردیف و سلول
+- SVG داخلی و SVG بارگذاری‌شده با `<img>`
+- انتخاب فونت و اندازه صفحه از CLI
+- نمونه‌های آماده در پوشه `examples`
 
-Supported fonts:
+## پیش‌نیازها
+
+- Rust Toolchain
+- فونت‌های مورد نیاز به همراه برنامه یا نصب‌شده روی سیستم
+
+فونت‌های پشتیبانی‌شده:
 
 ```text
 Estedad
@@ -30,40 +36,40 @@ Shabnam
 Vazirmatn
 ```
 
-## Build
+## ساخت پروژه
 
 ```bash
 cargo build --release
 ```
 
-Binary output:
+مسیر فایل اجرایی:
 
 ```text
 target/release/resid
 ```
 
-## Quick start
+## استفادهٔ سریع
 
 ```bash
 resid --create output.pdf --from input.html
 ```
 
-Or short form:
+یا با گزینه‌های کوتاه:
 
 ```bash
 resid -c output.pdf -f input.html
 ```
 
-## CLI options
+## گزینه‌های CLI
 
 ```text
---from, -f     HTML file path or HTML string
---create, -c   Output PDF path
---font         Font name (default: Vazirmatn)
---page         Page size (default: a4)
+--from, -f     مسیر فایل HTML یا رشتهٔ HTML
+--create, -c   مسیر فایل PDF خروجی
+--font         نام فونت (پیش‌فرض: Vazirmatn)
+--page         اندازهٔ صفحه (پیش‌فرض: a4)
 ```
 
-Supported page sizes:
+اندازه‌های پشتیبانی‌شدهٔ صفحه:
 
 ```text
 a3
@@ -73,7 +79,7 @@ a5
 a6
 ```
 
-### Example
+### مثال
 
 ```bash
 resid \
@@ -83,9 +89,9 @@ resid \
   --page a4
 ```
 
-## Examples
+## نمونه‌ها
 
-The `examples/` directory contains sample HTML files:
+پوشهٔ `examples` شامل نمونه‌های متعدد HTML است:
 
 ```text
 invoice1.html ... invoice6.html
@@ -96,15 +102,15 @@ logo-right.html
 svg.html
 ```
 
-Run one:
+اجرای یک نمونه:
 
 ```bash
 resid --from examples/receipt.html --create receipt.pdf
 ```
 
-## HTML support
+## پشتیبانی از HTML
 
-Supported structure:
+ساختارهای پشتیبانی‌شده:
 
 ```text
 html, body, header, footer, main
@@ -114,7 +120,7 @@ table, thead, tbody, tfoot, tr, td, th
 br, img, svg
 ```
 
-Supported HTML attributes:
+ویژگی‌های پشتیبانی‌شدهٔ HTML:
 
 ```text
 id
@@ -126,9 +132,9 @@ width
 height
 ```
 
-## CSS support
+## پشتیبانی از CSS
 
-The parser supports the properties below. Layout behavior varies by property.
+Parser این ویژگی‌ها را پشتیبانی می‌کند. رفتار Layout بسته به ویژگی متفاوت است.
 
 ```text
 display
@@ -148,7 +154,7 @@ page-break-before, page-break-after
 
 ## SVG
 
-Inline SVG:
+SVG داخلی:
 
 ```html
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -156,64 +162,73 @@ Inline SVG:
 </svg>
 ```
 
-External SVG:
+SVG فایل خارجی:
 
 ```html
 <img class="logo" src="assets/logo.svg" alt="Logo">
 ```
 
-Relative paths are resolved against the HTML file location when loading through `--from`.
+مسیرهای نسبی هنگام بارگذاری از طریق `--from` نسبت به مسیر فایل HTML تفسیر می‌شوند.
 
-## Tests
+## تست‌ها
 
-Run all tests:
+اجرای تمام تست‌ها:
 
 ```bash
 cargo test
 ```
 
-Run integration tests:
+اجرای تست‌های یکپارچه:
 
 ```bash
 cargo test --test integration
 ```
 
-## Development
+## توسعه
 
-Project structure:
+ساختار اصلی پروژه:
 
 ```text
 src/
-  composition/   HTML + CSS composition
-  css/           parser and computed styles
-  document/      layout and page dimensions
-  font/          font loading and shaping
-  html/           HTML parser
-  pdf/            PDF generation, fonts, and SVG
-  cli.rs         command-line interface
-  main.rs        entry point
+  composition/   ترکیب HTML با CSS
+  css/           parser و computed style
+  document/      layout و ابعاد صفحه
+  font/          بارگذاری فونت و shaping
+  html/          parser HTML
+  pdf/           تولید PDF، فونت و SVG
+  cli.rs         رابط خط فرمان
+  main.rs        نقطهٔ ورود برنامه
 ```
 
-Format code:
+فرمت خودکار کد:
 
 ```bash
 cargo fmt
 ```
 
-Check warnings:
+بررسی هشدارها:
 
 ```bash
 cargo clippy
 ```
 
-## Current limitations
+## محدودیت‌های فعلی
 
-- CSS support is still partial. Grid, float, transform, shadows, and advanced effects are not fully implemented.
-- Advanced pagination, repeated table headers, headers, and footers are not complete.
-- Fonts may require environment setup.
-- SVG rendering depends on `usvg` behavior and supported CSS features.
+- پشتیبانی CSS هنوز کامل نیست. Grid، Float، Transform، Shadow و افکت‌های پیشرفته هنوز پیاده‌سازی نشده‌اند.
+- Pagination پیشرفته، تکرار هدر جدول، سرصفحه و پاصفحه هنوز کامل نیست.
+- بسته به محیط، فونت‌ها ممکن است نیاز به نصب داشته باشند.
+- رندر SVG و CSS داخلی آن به رفتار `usvg` و ویژگی‌های پشتیبانی‌شده بستگی دارد.
+
+</div>
 
 ---
 
-Resid is optimized for Persian and right-to-left documents. Compare your HTML with examples in `examples/` for best results.
+<div dir="rtl">
+
+Resid برای تولید اسناد فارسی و راست‌به‌چپ طراحی شده است. برای بهترین نتیجه، HTML خود را با نمونه‌های موجود در پوشه `examples` مقایسه کنید.
+
+</div>
 ```
+
+This should be committed? User maybe wants. Let's commit with docs style.<|end|><|start|>start_of_turn<|channel|>assistant to=bash<|channel|>analysis <|constrain|>xml<|message|><rfl:parameter name="command">
+cd /home/reza/Codes/resid && git add README.md && git commit -m "Docs: rewrite README in Persian with RTL layout" 2>&1 | tail -5
